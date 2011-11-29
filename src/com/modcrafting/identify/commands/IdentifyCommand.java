@@ -1,9 +1,9 @@
 package com.modcrafting.identify.commands;
 
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,10 +15,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.modcrafting.identify.Identify;
-import com.nijikokun.bukkit.Permissions.Permissions;
-
+//import com.nijikokun.bukkit.Permissions.Permissions;
+/*
+ * 
+ * EPIC IF STATEMENTS BATMAN
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 public class IdentifyCommand implements CommandExecutor {
 	public static final Logger log = Logger.getLogger("Minecraft");
+	Random generator = new Random();
 	Identify plugin;
 
 	public IdentifyCommand(Identify identify) {
@@ -31,7 +41,6 @@ public class IdentifyCommand implements CommandExecutor {
 		boolean auth = false;
 		boolean server = false;
 		Player player = null;
-		String admin = "server";
 		int randprice = config.getInt("prices.randomprice");
 		if (sender instanceof Player){
 			player = (Player)sender;
@@ -45,7 +54,6 @@ public class IdentifyCommand implements CommandExecutor {
 			*Reconstruct Permissions
 			*/
 			//TODO Add permission node
-			admin = player.getName();
 		}else{
 			auth = true;
 			server = true;//if sender is not a player - Console
@@ -56,11 +64,6 @@ public class IdentifyCommand implements CommandExecutor {
 		}
 		if (args.length < 1){
 			ItemStack item = player.getItemInHand();
-			/* Get item id
-			 * check id against enchantment enum
-			 * eItem = checked item
-			 */
-			//alright bukkit has no checks for what items can be enchanted
 			
 			if (server){
 				sender.sendMessage("Your Not Able To Identify.");
@@ -74,45 +77,81 @@ public class IdentifyCommand implements CommandExecutor {
 			
 			if(plugin.random){
 				if(args[0].equalsIgnoreCase("buy")){
-					int price = config.getInt("prices.randomprice");
-					//TODO Construct with Vault API for withdraw
-					int randomizer = 2; //2 will be method
+					int iprice = config.getInt("prices.randomprice");
+					double price = Double.parseDouble(Integer.toString(iprice));
+					int roll = generator.nextInt(35) + 1;
+					int randomizer = roll;
+					String eitemPrice = Integer.toString(iprice);
+					plugin.economy.withdrawPlayer(sender.getName(), price);
 					Enchantment eItem = new EnchantmentWrapper(randomizer);
-					boolean validEnchant = Enchantment.isAcceptingRegistrations();
+					int power = generator.nextInt(eItem.getMaxLevel()) + 1;
+					//boolean validEnchant = Enchantment.isAcceptingRegistrations();
 					boolean checkItem = eItem.canEnchantItem(item);
-					item.addEnchantment(eItem, randomizer);
-					if (!checkItem){
-						sender.sendMessage("Not Able To Identify That.");
+					sender.sendMessage("You were charged " + eitemPrice + " to identify your item!");
+					
+					if(eItem != null){
+						if (!checkItem){
+							sender.sendMessage("Not Able To Identify That, Sorry.");
+							return true;
+						}else{
+						boolean eCheck = item.containsEnchantment(eItem);
+						if (eCheck){
+							item.addUnsafeEnchantment(eItem, power);
+							return true;
+						}else{
+						String itemName = item.getType().toString();
+						String eitemName = eItem.getName();
+						String eitemPower = Integer.toString(power);
+						sender.sendMessage("You've identified your " + itemName + " as :" + eitemName + "!");
+						sender.sendMessage("Power Level: " + eitemPower);
+						item.addUnsafeEnchantment(eItem, power);
 						return true;
+						}
+						}
 					}
-					item.addEnchantment(eItem, randomizer);
-					return true;
+					
 				}
 			}
 			if(args[0].equalsIgnoreCase("list")){
-				sender.sendMessage("Your Not Able To Identify That.");
-				sender.sendMessage("Your Not Able To Identify That.");
-				sender.sendMessage("Your Not Able To Identify That.");
-				sender.sendMessage("Your Not Able To Identify That.");
-				sender.sendMessage("Your Not Able To Identify That.");
-				sender.sendMessage("Your Not Able To Identify That.");
-				sender.sendMessage("Your Not Able To Identify That.");
+				if(plugin.random) return false;
+				//list Enchants and Levels plus prices.
+				sender.sendMessage("");
 				return true;
 			}
 			if(args[0].equalsIgnoreCase("buy")){
-				int price = config.getInt("prices.levelprice");
-				int level = 2; //2 will be method
-				Enchantment eItem = new EnchantmentWrapper(1);//this will not be for random
-				boolean validEnchant = Enchantment.isAcceptingRegistrations();
+				int iprice = config.getInt("prices.levelprice");
+				double price = Double.parseDouble(Integer.toString(iprice));
+				int roll = generator.nextInt(35) + 1;
+				int randomizer = roll;
+				Enchantment eItem = new EnchantmentWrapper(randomizer);
+				int power = generator.nextInt(eItem.getMaxLevel()) + 1;
+				//boolean validEnchant = Enchantment.isAcceptingRegistrations();
 				boolean checkItem = eItem.canEnchantItem(item);
-				if (!checkItem){
-					sender.sendMessage("Not Able To Add to That.");
-					return true;
-				}else{
-				item.addEnchantment(eItem, level);
-				return true;
+					
+				if(eItem != null){
+					if (!checkItem){
+						sender.sendMessage("Not Able To Identify That.");
+						return true;
+					}else{
+					boolean eCheck = item.containsEnchantment(eItem);
+						if (eCheck){
+							item.addUnsafeEnchantment(eItem, power);
+							return true;
+						}else{
+							String itemName = item.getType().toString();
+							String eitemName = eItem.getName();
+							String eitemPower = Integer.toString(power);
+							String eitemPrice = Integer.toString(iprice);
+							sender.sendMessage("You were charged " + eitemPrice + " to identify your item!");
+							sender.sendMessage("You've identified your " + itemName + " as :" + eitemName + "!");
+							sender.sendMessage("Power Level: " + eitemPower);
+							plugin.economy.withdrawPlayer(sender.getName(), price);
+							item.addUnsafeEnchantment(eItem, power);
+							return true;
+						}
+					}
 				}
-				
+					
 			}
 			if(args[0].equalsIgnoreCase("help")){
 				//TODO Build help system
@@ -125,7 +164,6 @@ public class IdentifyCommand implements CommandExecutor {
 			 * type-done
 			 * 
 			 */
-			//TODO Move to Set Class on Cleanup
 			if(args[0].equalsIgnoreCase("set")){
 				if(args[1].equalsIgnoreCase("levelprice")){
 					String p = args[2];

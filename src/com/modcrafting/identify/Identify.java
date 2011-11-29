@@ -7,8 +7,11 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.modcrafting.identify.commands.IdentifyCommand;
@@ -17,6 +20,7 @@ public class Identify extends JavaPlugin{
 	public final static Logger log = Logger.getLogger("Minecraft");
 	public String maindir = "plugins/Identify/";
 	public boolean random;
+	public Economy economy;
 	public void onDisable() {
 		System.out.println("UltraBan disabled.");
 	}
@@ -70,5 +74,12 @@ public class Identify extends JavaPlugin{
 		getCommand("identify").setExecutor(new IdentifyCommand(this));
 		return;
 	}
+	public boolean setupEconomy(){
+		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = this.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+			if (economyProvider != null) {
+				economy = economyProvider.getProvider();
+			}
+				return (economy != null);
+		}
 }
 
