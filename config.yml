@@ -1,2 +1,4 @@
-randomprice:
-priceperlevel:
+prices:
+  randomprice:
+  priceperlevel:
+enchantTools:

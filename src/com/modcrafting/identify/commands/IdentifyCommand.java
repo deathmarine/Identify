@@ -10,6 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,6 +44,7 @@ public class IdentifyCommand implements CommandExecutor {
 			}
 			*Reconstruct Permissions
 			*/
+			//TODO Add permission node
 			admin = player.getName();
 		}else{
 			auth = true;
@@ -54,41 +56,63 @@ public class IdentifyCommand implements CommandExecutor {
 		}
 		if (args.length < 1){
 			ItemStack item = player.getItemInHand();
-			
-			Enchantment eItem = getById();
-			
+			/* Get item id
+			 * check id against enchantment enum
+			 * eItem = checked item
+			 */
 			//alright bukkit has no checks for what items can be enchanted
 			
-			boolean checkItem = eItem.canEnchantItem(item);
-			if (checkItem){
-				sender.sendMessage("Your Not Able To Identify That.");				
-			}
 			if (server){
 				sender.sendMessage("Your Not Able To Identify.");
+				return true;
 			}
 			if (item == null){
 				sender.sendMessage("Your Not Holding Anything.");
 				return true;
 			}
 			
+			
 			if(plugin.random){
 				if(args[0].equalsIgnoreCase("buy")){
 					int price = config.getInt("prices.randomprice");
 					//TODO Construct with Vault API for withdraw
-					plugin.addEnchantment(ench, level);
+					int randomizer = 2; //2 will be method
+					Enchantment eItem = new EnchantmentWrapper(randomizer);
+					boolean validEnchant = Enchantment.isAcceptingRegistrations();
+					boolean checkItem = eItem.canEnchantItem(item);
+					item.addEnchantment(eItem, randomizer);
+					if (!checkItem){
+						sender.sendMessage("Not Able To Identify That.");
+						return true;
+					}
+					item.addEnchantment(eItem, randomizer);
 					return true;
 				}
 			}
 			if(args[0].equalsIgnoreCase("list")){
-				//list available enchantment for item in hand
-				//however no matter what items they might all be the same
+				sender.sendMessage("Your Not Able To Identify That.");
+				sender.sendMessage("Your Not Able To Identify That.");
+				sender.sendMessage("Your Not Able To Identify That.");
+				sender.sendMessage("Your Not Able To Identify That.");
+				sender.sendMessage("Your Not Able To Identify That.");
+				sender.sendMessage("Your Not Able To Identify That.");
+				sender.sendMessage("Your Not Able To Identify That.");
 				return true;
 			}
 			if(args[0].equalsIgnoreCase("buy")){
 				int price = config.getInt("prices.levelprice");
-				//TODO Construct with Vault API for withdraw
-				plugin.addEnchantment(ench, level);
+				int level = 2; //2 will be method
+				Enchantment eItem = new EnchantmentWrapper(1);//this will not be for random
+				boolean validEnchant = Enchantment.isAcceptingRegistrations();
+				boolean checkItem = eItem.canEnchantItem(item);
+				if (!checkItem){
+					sender.sendMessage("Not Able To Add to That.");
+					return true;
+				}else{
+				item.addEnchantment(eItem, level);
 				return true;
+				}
+				
 			}
 			if(args[0].equalsIgnoreCase("help")){
 				//TODO Build help system
