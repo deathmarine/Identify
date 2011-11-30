@@ -1,59 +1,50 @@
 package com.modcrafting.identify.commands;
 
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
-
+/*
+ * This is complete.
+ * 
+ */
 public class Enchant {
 
-	public Enchantment 	DAMAGE_ALL  = new EnchantmentWrapper(16);
- 	//Increases damage against all targets.
-
-	public Enchantment 	DAMAGE_ARTHROPODS = new EnchantmentWrapper(18);
- 	//Increases damage against arthropod targets.
-
-	public Enchantment 	DAMAGE_UNDEAD = new EnchantmentWrapper(17);
- 	//Increases damage against undead targets.
-
-	public Enchantment 	DIG_SPEED = new EnchantmentWrapper(32);
- 	//Increases the rate at which you mine/dig.
-
-	public Enchantment 	DURABILITY = new EnchantmentWrapper(34);
- 	//Decreases the rate at which a tool looses durability.
-
-	public Enchantment 	FIRE_ASPECT = new EnchantmentWrapper(20);
- 	//When attacking a target, has a chance to set them on fire.
-
-	public Enchantment 	KNOCKBACK = new EnchantmentWrapper(19);
- 	//All damage to other targets will knock them back when hit.
-
-	public Enchantment 	LOOT_BONUS_BLOCKS = new EnchantmentWrapper(35);
- 	//Provides a chance of gaining extra loot when destroying blocks.
-
-	public Enchantment 	LOOT_BONUS_MOBS = new EnchantmentWrapper(21);
- 	//Provides a chance of gaining extra loot when killing monsters.
-
-	public Enchantment 	OXYGEN = new EnchantmentWrapper(5);
- 	//Decreases the rate of air loss whilst underwater.
-
-	public Enchantment 	PROTECTION_ENVIRONMENTAL = new EnchantmentWrapper(0);
- 	//Provides protection against environmental damage.
-
-	public Enchantment 	PROTECTION_EXPLOSIONS = new EnchantmentWrapper(3);
- 	//Provides protection against explosive damage.
-
-	public Enchantment 	PROTECTION_FALL = new EnchantmentWrapper(2);
- 	//Provides protection against fall damage.
-
-	public Enchantment 	PROTECTION_FIRE = new EnchantmentWrapper(1);
- 	//Provides protection against fire damage.
-
-	public Enchantment 	PROTECTION_PROJECTILE = new EnchantmentWrapper(4);
- 	//Provides protection against projectile damage.
-
-	public Enchantment 	SILK_TOUCH = new EnchantmentWrapper(33);
- 	//Allows blocks to drop themselves instead of fragments (for example, stone instead of cobblestone)
-
-	public Enchantment 	WATER_WORKER = new EnchantmentWrapper(6);
- 	//Increases the speed at which a player may mine underwater. 
-
+	public static Enchantment 	DAMAGE_ALL;
+	public static Enchantment 	DAMAGE_ARTHROPODS;
+	public static Enchantment 	DAMAGE_UNDEAD;
+	public static Enchantment 	DIG_SPEED;
+	public static Enchantment 	DURABILITY;
+	public static Enchantment 	FIRE_ASPECT;
+	public static Enchantment 	KNOCKBACK;
+	public static Enchantment 	LOOT_BONUS_BLOCKS;
+	public static Enchantment 	LOOT_BONUS_MOBS;
+	public static Enchantment 	OXYGEN;
+	public static Enchantment 	PROTECTION_ENVIRONMENTAL;
+	public static Enchantment 	PROTECTION_EXPLOSIONS;
+	public static Enchantment 	PROTECTION_FALL;
+	public static Enchantment 	PROTECTION_FIRE;
+	public static Enchantment 	PROTECTION_PROJECTILE;
+	public static Enchantment 	SILK_TOUCH;
+	public static Enchantment 	WATER_WORKER;
+	
+	public static Enchantment enchant(int num){
+		switch(num){
+			case 1: return DAMAGE_ALL;
+			case 2: return DAMAGE_ARTHROPODS;
+			case 3: return DAMAGE_UNDEAD;
+			case 4: return DIG_SPEED;
+			case 5: return DURABILITY;
+			case 6: return FIRE_ASPECT;
+			case 7: return KNOCKBACK;
+			case 8: return LOOT_BONUS_BLOCKS;
+			case 9: return LOOT_BONUS_MOBS;
+			case 10: return OXYGEN;
+			case 11: return PROTECTION_ENVIRONMENTAL;
+			case 12: return PROTECTION_EXPLOSIONS;
+			case 13: return PROTECTION_FALL;
+			case 14: return PROTECTION_FIRE;
+			case 15: return PROTECTION_PROJECTILE;
+			case 16: return SILK_TOUCH;
+			case 17: return WATER_WORKER;
+			default: return null;
+		}
+	}
 }

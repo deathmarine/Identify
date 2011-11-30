@@ -14,6 +14,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.modcrafting.identify.commands.Enchant;
 import com.modcrafting.identify.commands.IdentifyCommand;
 
 public class Identify extends JavaPlugin{
@@ -21,6 +22,7 @@ public class Identify extends JavaPlugin{
 	public String maindir = "plugins/Identify/";
 	public boolean random;
 	public Economy economy;
+	public Enchant enchantments;
 	public void onDisable() {
 		System.out.println("UltraBan disabled.");
 	}
