@@ -7,13 +7,22 @@ import com.modcrafting.identify.Identify;
 public class Help {
 	static Identify plugin;
 	public Help(Identify identify) {
-
 		Help.plugin = identify;
 	}
-	public static boolean showHelp(Player player) {
-		// YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+	public boolean showHelp(Player sender) {
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		sender.sendMessage("");
+		
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 		
 }

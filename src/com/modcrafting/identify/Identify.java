@@ -7,22 +7,27 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.modcrafting.identify.commands.Buying;
 import com.modcrafting.identify.commands.Enchant;
+import com.modcrafting.identify.commands.Help;
 import com.modcrafting.identify.commands.IdentifyCommand;
+import com.modcrafting.identify.commands.Set;
 
 public class Identify extends JavaPlugin{
 	public final static Logger log = Logger.getLogger("Minecraft");
 	public String maindir = "plugins/Identify/";
 	public boolean random;
-	public Economy economy;
 	public Enchant enchantments;
+	public net.milkbowl.vault.permission.Permission permission = null;
+	public net.milkbowl.vault.economy.Economy economy = null;
+	public Buying buy = new Buying(this);
+	public Help help = new Help(this);
+	public Set set = new Set(this);
 	public void onDisable() {
 		System.out.println("UltraBan disabled.");
 	}
@@ -76,12 +81,20 @@ public class Identify extends JavaPlugin{
 		getCommand("identify").setExecutor(new IdentifyCommand(this));
 		return;
 	}
+	public Boolean setupPermissions()
+    {
+        RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            permission = permissionProvider.getProvider();
+        }
+        return (permission != null);
+    }
 	public boolean setupEconomy(){
-		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = this.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-			if (economyProvider != null) {
-				economy = economyProvider.getProvider();
-			}
-				return (economy != null);
+		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
+			economy = economyProvider.getProvider();
 		}
+			return (economy != null);
+	}
 }
 
