@@ -114,8 +114,10 @@ public class IdentifyCommand implements CommandExecutor {
 
 		if(args[0].equalsIgnoreCase("reload")){
 			if(adminAuth){
+				sender.sendMessage("[Identify] disabling.");
 				log.log(Level.SEVERE, "[Identify] disabling.");
 				plugin.getServer().getPluginManager().disablePlugin(plugin);
+				sender.sendMessage("[Identify] attempting restart.");
 				log.log(Level.SEVERE, "[Identify] attempting restart.");
 				plugin.getServer().getPluginManager().enablePlugin(plugin);
 				return true;
