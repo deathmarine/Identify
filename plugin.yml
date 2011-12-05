@@ -1,6 +1,6 @@
 name: Identify
 main: com.modcrafting.identify.Identify
-version: 0.0.1
+version: 0.0.2
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -8,4 +8,4 @@ description: >
 commands:
   identify:
     description: Command Access
-    usage: /<command> - Uses identify function.
+    usage: /<command> <help/list/set/buy>

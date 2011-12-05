@@ -19,20 +19,55 @@ public class Buying {
 	/*
 	 * This Method should work.
 	 * Use inline with IdentifyCommand
-	 * 
+	 * Not going to use Safe NO RESTRICTIONS
 	 */
-	public boolean buy(Player sender){
+	public boolean buyList(Player sender, String args){
+		//Config
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean rand = config.getBoolean("random", true);
-		if(rand){
-			if(buyRandom(sender)) return true;
-		}else{
-			if(buyList(sender)) return true;
+		int iprice = config.getInt("prices.levelprice", 500);
+		String eitemPrice = Integer.toString(iprice);
+		
+		//Item
+		ItemStack item = sender.getItemInHand();
+		String itemName = item.getType().toString();
+		if (item.getType() == Material.AIR){
+			sender.sendMessage("Your Not Holding Anything.");
+			return true;
 		}
-		return false;
-	}
-	public boolean buyList(Player sender){
-		return false;
+		
+		//Enchantment
+		int pvar = Integer.parseInt(args);
+		Enchantment enchant = Enchant.enchant(pvar);
+		String enchName = enchant.toString();
+		
+		//Power
+		int power = item.getEnchantmentLevel(enchant) + 1;
+		String powerLvl = Integer.toString(power);
+		int powerMax = 10; //enchant.getMaxLevel();
+		//After 10 looks retarded.
+		if(power > powerMax){
+			sender.sendMessage(ChatColor.DARK_AQUA + "This enchantment on this item is Maxed");
+			return true;
+		}
+		
+		//Economy
+		if(plugin.setupEconomy()){			
+			double bal = plugin.economy.getBalance(sender.getName());
+			double amtd = Double.valueOf(eitemPrice.trim());
+			if(amtd > bal){
+				sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+				return true;
+			}else{
+				plugin.economy.withdrawPlayer(sender.getName(), amtd);
+			}
+		}
+		
+		//Complete order
+		sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + eitemPrice);
+		sender.sendMessage(ChatColor.DARK_AQUA + "Current Item: " + ChatColor.BLUE + itemName);
+		sender.sendMessage(ChatColor.DARK_AQUA + "Enchantment " + ChatColor.BLUE + enchName + ChatColor.DARK_AQUA + " added to level " +ChatColor.BLUE + powerLvl + ChatColor.DARK_AQUA + " !");
+		item.addUnsafeEnchantment(enchant, power); 
+		return true;
 	}
 	
 	
@@ -45,6 +80,7 @@ public class Buying {
 		
 		//Random
 		Random generator = new Random();
+		
 		//Item
 		ItemStack item = sender.getItemInHand();
 		if (item.getType() == Material.AIR){
@@ -89,13 +125,13 @@ public class Buying {
 						}
 					}
 					
-					boolean testEitem = item.containsEnchantment(eItem);
+					boolean testEitem = Enchant.testEnchantment(item);
 							if(testEitem){
 								sender.sendMessage("This item is already identified.");
 								return true;
 							}else{
 								if(plugin.setupEconomy()){
-							}
+							
 								double bal = plugin.economy.getBalance(sender.getName());
 								double amtd = Double.valueOf(eitemPrice.trim());
 								if(amtd > bal){
@@ -104,6 +140,7 @@ public class Buying {
 								}else{
 									plugin.economy.withdrawPlayer(sender.getName(), amtd);
 								}
+							}
 								sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + eitemPrice);
 								sender.sendMessage(ChatColor.DARK_AQUA + "Your " + ChatColor.BLUE + itemName + ChatColor.DARK_AQUA + " has been identified!");
 								item.addUnsafeEnchantment(eItem, power); 
@@ -113,16 +150,6 @@ public class Buying {
 								if (eItem4 != null)	item.addUnsafeEnchantment(eItem4, power4);
 								return true;
 							}	
-				
-				
-				
-		/*		}else{
-					sender.sendMessage("This item is not identifable.");
-					
-				}
-				*/
-			//}
-		//return false;
 		}
 	}
 	

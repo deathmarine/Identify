@@ -3,5 +3,5 @@ random: true
 #How much to charge for Identification#
 prices:
   randomprice: 1000
-##priceperlevel: 5000
+  levelprice: 500
 randomMax: 5

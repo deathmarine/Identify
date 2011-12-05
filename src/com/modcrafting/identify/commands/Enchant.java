@@ -1,6 +1,7 @@
 package com.modcrafting.identify.commands;
 
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 /*
  * This is complete.
  * 
@@ -30,5 +31,24 @@ public class Enchant {
 			default: return Enchantment.DAMAGE_ALL;
 		}
 	}
-		
+	public static boolean testEnchantment(ItemStack item){
+		if (item.containsEnchantment(enchant(1))) return true;
+		if (item.containsEnchantment(enchant(2))) return true;
+		if (item.containsEnchantment(enchant(3))) return true;
+		if (item.containsEnchantment(enchant(4))) return true;
+		if (item.containsEnchantment(enchant(5))) return true;
+		if (item.containsEnchantment(enchant(6))) return true;
+		if (item.containsEnchantment(enchant(7))) return true;
+		if (item.containsEnchantment(enchant(8))) return true;
+		if (item.containsEnchantment(enchant(9))) return true;
+		if (item.containsEnchantment(enchant(10))) return true;
+		if (item.containsEnchantment(enchant(11))) return true;
+		if (item.containsEnchantment(enchant(12))) return true;
+		if (item.containsEnchantment(enchant(13))) return true;
+		if (item.containsEnchantment(enchant(14))) return true;
+		if (item.containsEnchantment(enchant(15))) return true;
+		if (item.containsEnchantment(enchant(16))) return true;
+		if (item.containsEnchantment(enchant(17))) return true;
+		return false;
+	}
 }

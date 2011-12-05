@@ -16,7 +16,7 @@ import com.modcrafting.identify.commands.Buying;
 import com.modcrafting.identify.commands.Enchant;
 import com.modcrafting.identify.commands.Help;
 import com.modcrafting.identify.commands.IdentifyCommand;
-import com.modcrafting.identify.commands.Set;
+import com.modcrafting.identify.commands.List;
 
 public class Identify extends JavaPlugin{
 	public final static Logger log = Logger.getLogger("Minecraft");
@@ -27,9 +27,9 @@ public class Identify extends JavaPlugin{
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public Buying buy = new Buying(this);
 	public Help help = new Help(this);
-	public Set set = new Set(this);
+	public List list = new List(this);
 	public void onDisable() {
-		System.out.println("UltraBan disabled.");
+		System.out.println("Identify disabled.");
 	}
 	
 	protected void createDefaultConfiguration(String name) {
