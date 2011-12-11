@@ -21,7 +21,7 @@ public class Buying {
 	 * Use inline with IdentifyCommand
 	 * Not going to use Safe NO RESTRICTIONS
 	 */
-	public boolean buyList(Player sender, String args){
+	public boolean buyList(Player sender, String args, String lvl){
 		//Config
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		int iprice = config.getInt("prices.levelprice", 500);
@@ -36,17 +36,29 @@ public class Buying {
 		}
 		
 		//Enchantment
-		int pvar = Integer.parseInt(args);
-		Enchantment enchant = Enchant.enchant(pvar);
+		Enchantment enchant = Enchant.enchantName(args);
+		if(enchant == null){
+			int pvar = Integer.parseInt(args);
+			enchant = Enchant.enchant(pvar);
+			if(enchant == null){
+				sender.sendMessage(ChatColor.DARK_AQUA + "'" + args + "'" + " is most definitly not valid!");
+			}
+		}
 		String enchName = enchant.toString();
 		
-		//Power
-		int power = item.getEnchantmentLevel(enchant) + 1;
-		String powerLvl = Integer.toString(power);
+		int power = 0;
+		String powerLvl = "";
+		if (lvl == null){
+		power = item.getEnchantmentLevel(enchant) + 1;
+		powerLvl = Integer.toString(power);
+		}else{
+		power = Integer.parseInt(lvl);
+		if (power > 10) power = 10;
+		}
 		int powerMax = 10; //enchant.getMaxLevel();
 		//After 10 looks retarded.
 		if(power > powerMax){
-			sender.sendMessage(ChatColor.DARK_AQUA + "This enchantment on this item is Maxed");
+			sender.sendMessage(ChatColor.DARK_AQUA + "The enchantment on this item is Maxed");
 			return true;
 		}
 		
