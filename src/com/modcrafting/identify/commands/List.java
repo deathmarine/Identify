@@ -16,7 +16,7 @@ public class List {
 	
 	public void showList(Player sender) {
 		ItemStack item = sender.getItemInHand();
-		String itemName = item.toString();
+		String itemName = item.getType().toString();
 		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Shop  {Current Item: " + itemName + " }");
 		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
 		sender.sendMessage(ChatColor.DARK_AQUA + "What would type of item would you like to enchant?");
@@ -32,11 +32,11 @@ public class List {
 		int iprice = config.getInt("prices.levelprice", 500);
 		String eitemPrice = Integer.toString(iprice);
 		ItemStack item = sender.getItemInHand();
-		String itemName = item.toString();
+		String itemName = item.getType().toString();
 		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Shop  {Current Item: " + itemName + " }");
 		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
 		sender.sendMessage(ChatColor.DARK_AQUA + "Each level costs " + eitemPrice + "!");
-		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy {ID#}");
+		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy {ID#/Name} (level)");
 		sender.sendMessage(ChatColor.BLUE + "What enchant would you like to add?");
 		sender.sendMessage(ChatColor.BLUE + "ID#4 DIG_SPEED +1");
 		sender.sendMessage(ChatColor.BLUE + "ID#5 DURABILITY +1");
@@ -49,11 +49,11 @@ public class List {
 		int iprice = config.getInt("prices.levelprice", 500);
 		String eitemPrice = Integer.toString(iprice);
 		ItemStack item = sender.getItemInHand();
-		String itemName = item.toString();
+		String itemName = item.getType().toString();
 		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Shop  {Current Item: " + itemName + " }");
 		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
 		sender.sendMessage(ChatColor.DARK_AQUA + "Each level costs " + eitemPrice + "!");
-		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy {ID#}");
+		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy {ID#/Name} (level)");
 		sender.sendMessage(ChatColor.BLUE + "What enchant would you like to add?");
 		sender.sendMessage(ChatColor.BLUE + "ID#10 OXYGEN +1");
 		sender.sendMessage(ChatColor.BLUE + "ID#11 PROTECTION_ENVIRONMENTAL +1");
@@ -69,11 +69,11 @@ public class List {
 		int iprice = config.getInt("prices.levelprice", 500);
 		String eitemPrice = Integer.toString(iprice);
 		ItemStack item = sender.getItemInHand();
-		String itemName = item.toString();
+		String itemName = item.getType().toString();
 		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Shop  {Current Item: " + itemName + " }");
 		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
 		sender.sendMessage(ChatColor.DARK_AQUA + "Each level costs " + eitemPrice + "!");
-		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy list {ID#}");
+		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy {ID#/Name} (level)");
 		sender.sendMessage(ChatColor.BLUE + "What enchant would you like to add?");
 		sender.sendMessage(ChatColor.BLUE + "ID#1 DAMAGE_ALL +1");
 		sender.sendMessage(ChatColor.BLUE + "ID#2 DAMAGE_ARTHROPODS +1");

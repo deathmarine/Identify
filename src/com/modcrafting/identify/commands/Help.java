@@ -15,7 +15,8 @@ public class Help {
 		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
 		sender.sendMessage(ChatColor.DARK_AQUA + "/identify");
 		sender.sendMessage(ChatColor.DARK_AQUA + "If config is set for random: true");
-		sender.sendMessage(ChatColor.DARK_AQUA + "use /identify buy - random enchantment.");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/identify buy - random enchantment.");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/Identify buy {ID#/Name} (level/MAX)");
 		sender.sendMessage(ChatColor.DARK_AQUA + "/identify list");
 		sender.sendMessage(ChatColor.DARK_AQUA + "/identify set");
 		sender.sendMessage(ChatColor.DARK_AQUA + "/identify reload");

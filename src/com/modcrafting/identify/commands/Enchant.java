@@ -52,23 +52,23 @@ public class Enchant {
 		return false;
 	}
 	public static Enchantment enchantName(String num){
-		if (num == "DAMAGE_ALL") return enchant(1);
-		if (num == "DAMAGE_ARTHROPODS") return enchant(2);
-		if (num == "DAMAGE_UNDEAD") return enchant(3);
-		if (num == "DIG_SPEED") return enchant(4);
-		if (num == "DURABILITY") return enchant(5);
-		if (num == "FIRE_ASPECT") return enchant(6);
-		if (num == "KNOCKBACK") return enchant(7);
-		if (num == "LOOT_BONUS_BLOCKS") return enchant(8);
-		if (num == "LOOT_BONUS_MOBS") return enchant(9);
-		if (num == "OXYGEN") return enchant(10);
-		if (num == "PROTECTION_ENVIRONMENTAL") return enchant(11);
-		if (num == "PROTECTION_EXPLOSIONS") return enchant(12);
-		if (num == "PROTECTION_FALL") return enchant(13);
-		if (num == "PROTECTION_FIRE") return enchant(14);
-		if (num == "PROTECTION_PROJECTILE") return enchant(15);
-		if (num == "SILK_TOUCH") return enchant(16);
-		if (num == "WATER_WORKER") return enchant(17);
+		if (num.equalsIgnoreCase("DAMAGE_ALL")) return Enchantment.DAMAGE_ALL;
+		if (num.equalsIgnoreCase("DAMAGE_ARTHROPODS")) return Enchantment.DAMAGE_ARTHROPODS;
+		if (num.equalsIgnoreCase("DAMAGE_UNDEAD")) return Enchantment.DAMAGE_UNDEAD;
+		if (num.equalsIgnoreCase("DIG_SPEED")) return Enchantment.DIG_SPEED;
+		if (num.equalsIgnoreCase("DURABILITY")) return Enchantment.DURABILITY;
+		if (num.equalsIgnoreCase("FIRE_ASPECT")) return Enchantment.FIRE_ASPECT;
+		if (num.equalsIgnoreCase("KNOCKBACK")) return Enchantment.KNOCKBACK;
+		if (num.equalsIgnoreCase("LOOT_BONUS_BLOCKS")) return Enchantment.LOOT_BONUS_BLOCKS;
+		if (num.equalsIgnoreCase("LOOT_BONUS_MOBS")) return Enchantment.LOOT_BONUS_MOBS;
+		if (num.equalsIgnoreCase("OXYGEN")) return Enchantment.OXYGEN;
+		if (num.equalsIgnoreCase("PROTECTION_ENVIRONMENTAL")) return Enchantment.PROTECTION_ENVIRONMENTAL;
+		if (num.equalsIgnoreCase("PROTECTION_EXPLOSIONS")) return Enchantment.PROTECTION_EXPLOSIONS;
+		if (num.equalsIgnoreCase("PROTECTION_FALL")) return Enchantment.PROTECTION_FALL;
+		if (num.equalsIgnoreCase("PROTECTION_FIRE")) return Enchantment.PROTECTION_FIRE;
+		if (num.equalsIgnoreCase("PROTECTION_PROJECTILE")) return Enchantment.PROTECTION_PROJECTILE;
+		if (num.equalsIgnoreCase("SILK_TOUCH")) return Enchantment.SILK_TOUCH;
+		if (num.equalsIgnoreCase("WATER_WORKER")) return Enchantment.WATER_WORKER;
 		return null;
 		
 	}

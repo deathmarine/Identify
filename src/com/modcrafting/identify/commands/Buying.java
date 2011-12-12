@@ -25,7 +25,6 @@ public class Buying {
 		//Config
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		int iprice = config.getInt("prices.levelprice", 500);
-		String eitemPrice = Integer.toString(iprice);
 		
 		//Item
 		ItemStack item = sender.getItemInHand();
@@ -36,21 +35,54 @@ public class Buying {
 		}
 		
 		//Enchantment
+		if (args.equalsIgnoreCase("all")){
+			Enchantment[] enchant = Enchantment.values();
+			int power = 0;
+			String powerLvl = "";
+			if (lvl == null){
+			power = 1;
+			}else{
+			power = Integer.parseInt(lvl);
+			if (power > 10) power = 10;
+			}
+			int powerMax = 10; //enchant.getMaxLevel();
+			//After 10 looks retarded.
+			if(power > powerMax){
+				sender.sendMessage(ChatColor.DARK_AQUA + "The enchantment on this item is Maxed");
+				return true;
+			}
+			powerLvl = Integer.toString(power);
+			int price = power * iprice * 17;
+			String eitemPrice = Integer.toString(price);
+			if(plugin.setupEconomy()){			
+				double bal = plugin.economy.getBalance(sender.getName());
+				double amtd = Double.valueOf(eitemPrice.trim());
+				if(amtd > bal){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+					return true;
+				}else{
+					for (int i=0; i<enchant.length; i++){
+						item.addUnsafeEnchantment(enchant[i], power);
+					}
+					sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + eitemPrice);
+					sender.sendMessage(ChatColor.DARK_AQUA + "Current Item: " + ChatColor.BLUE + itemName);
+					sender.sendMessage(ChatColor.DARK_AQUA + "Enchantment " + ChatColor.BLUE + "ALL" + ChatColor.DARK_AQUA + " added to level " +ChatColor.BLUE + powerLvl + ChatColor.DARK_AQUA + " !");
+					return true;
+				}
+			}
+		}
 		Enchantment enchant = Enchant.enchantName(args);
 		if(enchant == null){
 			int pvar = Integer.parseInt(args);
 			enchant = Enchant.enchant(pvar);
-			if(enchant == null){
-				sender.sendMessage(ChatColor.DARK_AQUA + "'" + args + "'" + " is most definitly not valid!");
-			}
 		}
 		String enchName = enchant.toString();
 		
+		//Power
 		int power = 0;
 		String powerLvl = "";
 		if (lvl == null){
 		power = item.getEnchantmentLevel(enchant) + 1;
-		powerLvl = Integer.toString(power);
 		}else{
 		power = Integer.parseInt(lvl);
 		if (power > 10) power = 10;
@@ -61,8 +93,12 @@ public class Buying {
 			sender.sendMessage(ChatColor.DARK_AQUA + "The enchantment on this item is Maxed");
 			return true;
 		}
+		powerLvl = Integer.toString(power);
+		
 		
 		//Economy
+		int price = power * iprice;
+		String eitemPrice = Integer.toString(price);
 		if(plugin.setupEconomy()){			
 			double bal = plugin.economy.getBalance(sender.getName());
 			double amtd = Double.valueOf(eitemPrice.trim());

@@ -69,7 +69,6 @@ public class IdentifyCommand implements CommandExecutor {
 		}
 		
 		if(args[0].equalsIgnoreCase("list")){
-			if(plugin.random) return false;
 
 			if(args.length < 2){
 				plugin.list.showList(player);
@@ -90,23 +89,28 @@ public class IdentifyCommand implements CommandExecutor {
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("buy")){
-			YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+			//YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 				if(auth){
-					if(config.getBoolean("random", true)){
-						if(plugin.buy.buyRandom(player))return true;
-					}else{
-						if(args.length < 2) return false;
+						if(args.length < 2){
+							if(plugin.buy.buyRandom(player))return true;
+						}
 						if(args[1].equalsIgnoreCase("random")){
 							if(plugin.buy.buyRandom(player))return true;							
 						}
 						String lvl =  null;
 						if(args.length < 3){
 							lvl = "1";
+						}else{
+							if(args[2].equalsIgnoreCase("max")){
+								lvl = "10";
+							}else{
+								lvl = args[2];							
+							}
 						}
 						if(plugin.buy.buyList(player, args[1], lvl)) return true;
 						return false;
 					}
-				}
+				
 				
 				return false;
 		}
