@@ -1,0 +1,11 @@
+name: Identify
+main: com.modcrafting.identify.Identify
+version: 0.0.2
+website: http://modcrafting.com
+author: Deathmarine
+description: >
+             Buy Plugin for Bukkit.
+commands:
+  identify:
+    description: Command Access
+    usage: /<command> <help/list/set/buy>
