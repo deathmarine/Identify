@@ -64,6 +64,7 @@ public class Buying {
 					for (int i=0; i<enchant.length; i++){
 						item.addUnsafeEnchantment(enchant[i], power);
 					}
+					plugin.economy.withdrawPlayer(sender.getName(), amtd);
 					sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + eitemPrice);
 					sender.sendMessage(ChatColor.DARK_AQUA + "Current Item: " + ChatColor.BLUE + itemName);
 					sender.sendMessage(ChatColor.DARK_AQUA + "Enchantment " + ChatColor.BLUE + "ALL" + ChatColor.DARK_AQUA + " added to level " +ChatColor.BLUE + powerLvl + ChatColor.DARK_AQUA + " !");
