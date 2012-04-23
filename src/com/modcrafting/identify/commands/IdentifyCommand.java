@@ -89,7 +89,7 @@ public class IdentifyCommand implements CommandExecutor {
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("buy")){
-			//YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+			YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 				if(auth){
 						if(args.length < 2){
 							if(plugin.buy.buyRandom(player))return true;
@@ -102,7 +102,8 @@ public class IdentifyCommand implements CommandExecutor {
 							lvl = "1";
 						}else{
 							if(args[2].equalsIgnoreCase("max")){
-								lvl = "10";
+								String max = config.getString("maxLevel", "10");
+								lvl = max.trim();
 							}else{
 								lvl = args[2];							
 							}

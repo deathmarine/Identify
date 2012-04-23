@@ -5,3 +5,4 @@ prices:
   randomprice: 1000
   levelprice: 500
 randomMax: 5
+maxLevel: 10

@@ -24,7 +24,8 @@ public class Buying {
 	public boolean buyList(Player sender, String args, String lvl){
 		//Config
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		int iprice = config.getInt("prices.levelprice", 500);
+		int iprice = config.getInt("prices.levelprice", 5000);
+		int max = config.getInt("maxLevel", 10);
 		
 		//Item
 		ItemStack item = sender.getItemInHand();
@@ -37,26 +38,28 @@ public class Buying {
 		//Enchantment
 		if (args.equalsIgnoreCase("all")){
 			Enchantment[] enchant = Enchantment.values();
+			//Power
 			int power = 0;
 			String powerLvl = "";
 			if (lvl == null){
 			power = 1;
 			}else{
 			power = Integer.parseInt(lvl);
-			if (power > 10) power = 10;
+			if (power > max) power = max;
 			}
-			int powerMax = 10; //enchant.getMaxLevel();
-			//After 10 looks retarded.
-			if(power > powerMax){
+			if(power > max){
 				sender.sendMessage(ChatColor.DARK_AQUA + "The enchantment on this item is Maxed");
 				return true;
 			}
 			powerLvl = Integer.toString(power);
+			
+			//Price
 			int price = power * iprice * 17;
 			String eitemPrice = Integer.toString(price);
+			//Economy
 			if(plugin.setupEconomy()){			
 				double bal = plugin.economy.getBalance(sender.getName());
-				double amtd = Double.valueOf(eitemPrice.trim());
+				double amtd = Double.parseDouble(eitemPrice);
 				if(amtd > bal){
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
@@ -86,11 +89,9 @@ public class Buying {
 		power = item.getEnchantmentLevel(enchant) + 1;
 		}else{
 		power = Integer.parseInt(lvl);
-		if (power > 10) power = 10;
+		if (power > max) power = max;
 		}
-		int powerMax = 10; //enchant.getMaxLevel();
-		//After 10 looks retarded.
-		if(power > powerMax){
+		if(power > max){
 			sender.sendMessage(ChatColor.DARK_AQUA + "The enchantment on this item is Maxed");
 			return true;
 		}
@@ -102,7 +103,7 @@ public class Buying {
 		String eitemPrice = Integer.toString(price);
 		if(plugin.setupEconomy()){			
 			double bal = plugin.economy.getBalance(sender.getName());
-			double amtd = Double.valueOf(eitemPrice.trim());
+			double amtd = Double.parseDouble(eitemPrice);
 			if(amtd > bal){
 				sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 				return true;
