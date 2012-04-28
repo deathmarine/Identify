@@ -54,7 +54,7 @@ public class Buying {
 			powerLvl = Integer.toString(power);
 			
 			//Price
-			int price = power * iprice * 17;
+			int price = power * iprice * 21;
 			String eitemPrice = Integer.toString(price);
 			//Economy
 			if(plugin.setupEconomy()){			
@@ -84,18 +84,20 @@ public class Buying {
 		
 		//Power
 		int power = 0;
-		String powerLvl = "";
 		if (lvl == null){
-		power = item.getEnchantmentLevel(enchant) + 1;
+			power = item.getEnchantmentLevel(enchant) + 1;
 		}else{
-		power = Integer.parseInt(lvl);
-		if (power > max) power = max;
+			power = Integer.parseInt(lvl);
+			if (power > max) power = max;
+			if (power > item.getEnchantmentLevel(enchant)){
+			power = item.getEnchantmentLevel(enchant) + Integer.parseInt(lvl);
+			}
 		}
 		if(power > max){
 			sender.sendMessage(ChatColor.DARK_AQUA + "The enchantment on this item is Maxed");
 			return true;
 		}
-		powerLvl = Integer.toString(power);
+		String powerLvl = Integer.toString(power);
 		
 		
 		//Economy
@@ -138,7 +140,7 @@ public class Buying {
 			return true;
 		}
 		String itemName = item.getType().toString();
-				int randomizer = generator.nextInt(17) + 1;
+				int randomizer = generator.nextInt(21) + 1;
 				Enchantment eItem = Enchant.enchant(randomizer);
 				Enchantment eItem1 = null;
 				Enchantment eItem2 = null;
@@ -155,19 +157,19 @@ public class Buying {
 				int randomMax = config.getInt("randomMax", 5);
 				int randMax = generator.nextInt(randomMax) + 1;
 					if (randMax > 1){
-						int randomizer1 = generator.nextInt(17) + 1;
+						int randomizer1 = generator.nextInt(21) + 1;
 						eItem1 = Enchant.enchant(randomizer1);
 						power1 = generator.nextInt(eItem1.getMaxLevel()) + 1;
 						if (randMax > 2){
-							int randomizer2 = generator.nextInt(17) + 1;
+							int randomizer2 = generator.nextInt(21) + 1;
 							eItem2 = Enchant.enchant(randomizer2);
 							power2 = generator.nextInt(eItem2.getMaxLevel()) + 1;
 							if (randMax > 3){
-								int randomizer3 = generator.nextInt(17) + 1;
+								int randomizer3 = generator.nextInt(21) + 1;
 								eItem3 = Enchant.enchant(randomizer3);
 								power3 = generator.nextInt(eItem3.getMaxLevel()) + 1;
 								if (randMax > 4){
-									int randomizer4 = generator.nextInt(17) + 1;
+									int randomizer4 = generator.nextInt(21) + 1;
 									eItem4 = Enchant.enchant(randomizer4);
 									power4 = generator.nextInt(eItem4.getMaxLevel()) + 1;
 								}

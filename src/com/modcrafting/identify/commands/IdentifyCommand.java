@@ -86,6 +86,10 @@ public class IdentifyCommand implements CommandExecutor {
 				plugin.list.weaponList(player);
 				return true;
 			}
+			if(args[1].equalsIgnoreCase("bow")){
+				plugin.list.arrowList(player);
+				return true;
+			}
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("buy")){

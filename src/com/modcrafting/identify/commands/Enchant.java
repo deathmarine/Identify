@@ -28,6 +28,10 @@ public class Enchant {
 			case 15: return Enchantment.PROTECTION_PROJECTILE; //All Armor
 			case 16: return Enchantment.SILK_TOUCH; //Tools except Hoe
 			case 17: return Enchantment.WATER_WORKER; //Armor Helmet Only
+			case 18: return Enchantment.ARROW_DAMAGE;
+			case 19: return Enchantment.ARROW_FIRE;
+			case 20: return Enchantment.ARROW_KNOCKBACK;
+			case 21: return Enchantment.ARROW_INFINITE;
 			default: return null;
 		}
 	}
@@ -49,6 +53,10 @@ public class Enchant {
 		if (item.containsEnchantment(enchant(15))) return true;
 		if (item.containsEnchantment(enchant(16))) return true;
 		if (item.containsEnchantment(enchant(17))) return true;
+		if (item.containsEnchantment(enchant(18))) return true;
+		if (item.containsEnchantment(enchant(19))) return true;
+		if (item.containsEnchantment(enchant(20))) return true;
+		if (item.containsEnchantment(enchant(21))) return true;
 		return false;
 	}
 	public static Enchantment enchantName(String num){
@@ -69,6 +77,10 @@ public class Enchant {
 		if (num.equalsIgnoreCase("PROTECTION_PROJECTILE")) return Enchantment.PROTECTION_PROJECTILE;
 		if (num.equalsIgnoreCase("SILK_TOUCH")) return Enchantment.SILK_TOUCH;
 		if (num.equalsIgnoreCase("WATER_WORKER")) return Enchantment.WATER_WORKER;
+		if (num.equalsIgnoreCase("ARROW_DAMAGE")) return Enchantment.ARROW_DAMAGE;
+		if (num.equalsIgnoreCase("ARROW_FIRE")) return Enchantment.ARROW_FIRE;
+		if (num.equalsIgnoreCase("ARROW_KNOCKBACK")) return Enchantment.ARROW_KNOCKBACK;
+		if (num.equalsIgnoreCase("ARROW_INFINITE")) return Enchantment.ARROW_INFINITE;
 		return null;
 		
 	}

@@ -25,6 +25,7 @@ public class List {
 		sender.sendMessage(ChatColor.BLUE + "TOOLS");
 		sender.sendMessage(ChatColor.BLUE + "ARMOR");
 		sender.sendMessage(ChatColor.BLUE + "WEAPONS");
+		sender.sendMessage(ChatColor.BLUE + "BOW");
 		return;
 	}
 	public void toolList(Player sender){
@@ -83,5 +84,21 @@ public class List {
 		sender.sendMessage(ChatColor.BLUE + "ID#9 LOOT_BONUS_MOBS +1");
 		return;		
 	}
-
+	public void arrowList(Player sender){
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		int iprice = config.getInt("prices.levelprice", 500);
+		String eitemPrice = Integer.toString(iprice);
+		ItemStack item = sender.getItemInHand();
+		String itemName = item.getType().toString();
+		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Shop  {Current Item: " + itemName + " }");
+		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
+		sender.sendMessage(ChatColor.DARK_AQUA + "Each level costs " + eitemPrice + "!");
+		sender.sendMessage(ChatColor.GOLD + "Use /Identify buy {ID#/Name} (level)");
+		sender.sendMessage(ChatColor.BLUE + "What enchant would you like to add?");
+		sender.sendMessage(ChatColor.BLUE + "ID#18 ARROW_DAMAGE +1");
+		sender.sendMessage(ChatColor.BLUE + "ID#19 ARROW_FIRE +1");
+		sender.sendMessage(ChatColor.BLUE + "ID#20 ARROW_KNOCKBACK +1");
+		sender.sendMessage(ChatColor.BLUE + "ID#21 ARROW_INFINITE +1");
+		return;		
+	}
 }
