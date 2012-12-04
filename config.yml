@@ -18,3 +18,9 @@ Lore:
   FlatRatePerLine: 1000
   PerLetterLine: false
   PerRate: 10
+Repair:
+  Enabled: true
+  Flat: true
+  FlatRate: 1000
+#If flat is false, defaults to charge per letter#
+  PriceVsDamage: 10

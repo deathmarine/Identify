@@ -60,7 +60,12 @@ public class Buying {
 			return;
 		}
 		String powerLvl = Integer.toString(power);
-		
+
+		if(!enchant.canEnchantItem(item)
+				&&config.getBoolean("Enchantment.SafeEnchant",true)){
+			sender.sendMessage(ChatColor.DARK_AQUA + "Your can't set this enchantment!");
+			return;
+		}
 		
 		//Economy
 		int price = lvl * iprice;
@@ -113,7 +118,7 @@ public class Buying {
 				}
 			}
 		}
-		item.addEnchantments(map);
+		item.addUnsafeEnchantments(map);
 		plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 		sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + Double.toString(price));
 		sender.sendMessage(ChatColor.DARK_AQUA + "Your " + ChatColor.BLUE + itemName + ChatColor.DARK_AQUA + " has been identified!");
@@ -139,19 +144,27 @@ public class Buying {
 		}
 		String itemName = item.getType().name();
 		int l = config.getInt("Random.Enchantments.Max", 5);
-		for(;l>0;l--){
-			Enchantment eItem = Enchantment.values()[generator.nextInt(Enchantment.values().length)];
-			if(eItem!=null){
-				if (config.getBoolean("SafeEnchant.Enabled",true)){
-					try{
-						item.addEnchantment(eItem,generator.nextInt(eItem.getMaxLevel()) + 1);
-					}catch (Exception e1){
+		int t=0;
+		while(item.getEnchantments().size()==0&&t<3){
+			for(;l>0;l--){
+				Enchantment eItem = Enchantment.values()[generator.nextInt(Enchantment.values().length)];
+				if(eItem!=null){
+					if (config.getBoolean("SafeEnchant.Enabled",true)){
+						try{
+							item.addEnchantment(eItem,generator.nextInt(eItem.getMaxLevel()) + 1);
+						}catch (Exception e1){
+						}
+					}else{
+						item.addUnsafeEnchantment(eItem,generator.nextInt(eItem.getMaxLevel()) + 1);
 					}
-				}else{
-					item.addUnsafeEnchantment(eItem,generator.nextInt(eItem.getMaxLevel()) + 1);
 				}
 			}
-		}	
+			t++;
+		}
+		if(item.getEnchantments().size()==0){
+			sender.sendMessage(ChatColor.DARK_AQUA + "Your can't enchant this item!");
+			return;
+		}
 		plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 		sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + Double.toString(price));
 		sender.sendMessage(ChatColor.DARK_AQUA + "Your " + ChatColor.BLUE + itemName + ChatColor.DARK_AQUA + " has been identified!");

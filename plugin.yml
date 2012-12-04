@@ -8,7 +8,7 @@ softdepend: [DiabloDrops]
 commands:
   identify:
     description: Command Access
-    usage: /<command> <Buy/List/Reload/Clear/Help>
+    usage: /<command> <Buy/List/Repair/Reload/Clear/Help>
     permission: identify.command
 permissions:
   identify.*:
@@ -18,6 +18,9 @@ permissions:
       identify.command: true
       identify.buy.*: true
       identify.list: true
+      identify.reload: true
+      identify.repair: true
+      idenitfy.clear: true
   identify.command:
     description: Allows access to the command structure.
   identify.buy:
@@ -44,3 +47,7 @@ permissions:
     description: Overrides Hook Block for DiabloDrops.
   identify.reload:
     description: Reloads the plugin.
+  identify.repair:
+    description: Allows the user to repair thier item
+  identify.clear:
+    description: Allows the user to clear thier item.

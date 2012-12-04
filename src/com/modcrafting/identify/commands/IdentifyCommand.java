@@ -217,33 +217,55 @@ public class IdentifyCommand implements CommandExecutor {
 				return true;
 			}
 			if(args[1].equalsIgnoreCase("random")&&hasPerms(sender,"identify.buy.random")){
+				if(new Tool(((CraftItemStack) player.getItemInHand()).getHandle()).getName().contains(new Character((char) 167).toString())){
+					sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
+					return true;
+				}
 				plugin.buy.buyRandom(player);
 				return true;						
 			}
 			if(args[1].equalsIgnoreCase("enchant")&&args.length>2&&hasPerms(sender,"identify.buy.enchant")){
+				if(new Tool(((CraftItemStack) player.getItemInHand()).getHandle()).getName().contains(new Character((char) 167).toString())){
+					sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
+					return true;
+				}
 				plugin.buy.buyList(player, args); 
 				return true;
 			}
 		}
-		/*
-        if (args[2].equalsIgnoreCase("remove"))
-        {
-            ItemStack is = player.getItemInHand();
-            Map<Enchantment, Integer> hm = new HashMap<Enchantment, Integer>();
-            for (Enchantment e1 : is.getEnchantments().keySet())
-            {
-                if (!e1.getName().equalsIgnoreCase(args[3]))
-                {
-                    hm.put(e1, is.getEnchantmentLevel(e1));
-                }
-            }
-            is.addUnsafeEnchantments(hm);
-            player.sendMessage(ChatColor.GREEN
-                    + "Removed enchantment.");
-            return true;
 
-        }
-        */
+		if(args[0].equalsIgnoreCase("repair")
+				&&plugin.getConfig().getBoolean("Repair.Enabled",true)
+				&&hasPerms(sender,"identify.repair")){
+			double bal = plugin.economy.getBalance(sender.getName());
+			double price = 1000;
+			ItemStack item = player.getItemInHand();
+			if (item==null||item.getType() == Material.AIR){
+				sender.sendMessage(ChatColor.DARK_AQUA + "Your Not Holding Anything.");
+				return true;
+			}
+			if(plugin.getConfig().getBoolean("Repair.Flat",true)){
+				price = plugin.ddConfig.getDouble("Repair.FlatRate", 1000);
+				if(price > bal){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+					sender.sendMessage(ChatColor.BLUE + "Repair Cost: "+String.valueOf(price));
+					return true;
+				}
+				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+			}else{
+				price = plugin.ddConfig.getDouble("Repair.PriceVsDamage", 10);
+				price = price*item.getDurability();
+				if(price > bal){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+					sender.sendMessage(ChatColor.BLUE + "Repair Cost: "+String.valueOf(price));
+					return true;
+				}
+				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+			}
+			item.setDurability((short)0);
+			sender.sendMessage(ChatColor.GRAY+" Your "+item.getType().toString()+ChatColor.GRAY+" was repaired for "+ChatColor.GOLD+String.valueOf(price));
+			return true;
+		}
 		if(args[0].equalsIgnoreCase("help")){
 			showHelp(player);
 			return true;
@@ -252,6 +274,7 @@ public class IdentifyCommand implements CommandExecutor {
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			plugin.getServer().getPluginManager().enablePlugin(plugin);
 			plugin.reloadConfig();
+			sender.sendMessage(ChatColor.GREEN+"Reloaded Identify.");
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("clear")&&hasPerms(sender,"identify.clear")){
