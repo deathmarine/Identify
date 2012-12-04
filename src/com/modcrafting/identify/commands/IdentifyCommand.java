@@ -5,13 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginDescriptionFile;
-
 import com.modcrafting.identify.Identify;
+import com.modcrafting.toolapi.lib.Tool;
 /*
  * 
  */
@@ -23,46 +22,41 @@ public class IdentifyCommand implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		if (!sender.hasPermission("")){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+		if (!hasPerms(sender,command.getPermission()))
 			return true;
-		}
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
 		}
-		if(args[0].equalsIgnoreCase("list")){
+		if(args[0].equalsIgnoreCase("list")&&hasPerms(sender,"identify.list")){
 
 			if(args.length < 2){
-				plugin.list.showList(player);
+				showList(player);
 				return true;
 			}
-			if(args[1].equalsIgnoreCase("tools")){
-				plugin.list.toolList(player);
-				return true;
-			}
-			if(args[1].equalsIgnoreCase("armor")){
-				plugin.list.armorList(player);
-				return true;
-			}
-			if(args[1].equalsIgnoreCase("weapons")){
-				plugin.list.weaponList(player);
-				return true;
-			}
-			if(args[1].equalsIgnoreCase("bow")){
-				plugin.list.arrowList(player);
+			if(args[1].equalsIgnoreCase("dd")&&plugin.getDiabloDrops()!=null){
+				//TODO: DD daily list.
+				//TODO: DD Tier list.
+				//TODO: DD Custom buy.
 				return true;
 			}
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("buy")){
+			if (!hasPerms(sender,"identify.buy"))
+				return true;
 			double bal = plugin.economy.getBalance(sender.getName());
 			if(args.length<2){
-				sender.sendMessage(ChatColor.GRAY+" /identify buy <dd|tier|name|enchant|lore|random>");
-				return true;
+				if(plugin.getDiabloDrops()!=null){
+					sender.sendMessage(ChatColor.GRAY+" /identify buy <dd|tier|tome|gem|name|enchant|lore|random>");
+					return true;
+				}
+				return false;				
 			}
-			if(args[1].equalsIgnoreCase("diablodrop")||args[1].equalsIgnoreCase("dd")){
-				double price = plugin.ddConfig.getDouble("diablodrop.price", 1000);
+			if((args[1].equalsIgnoreCase("diablodrop")||args[1].equalsIgnoreCase("dd"))
+					&&plugin.getDiabloDrops()!=null){
+				if(!plugin.ddConfig.getBoolean("DiabloDrop.Random.Enabled",true)) return true;
+				double price = plugin.ddConfig.getDouble("DiabloDrop.Random.Price", 1000);
 				if(price > bal){
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
@@ -71,21 +65,22 @@ public class IdentifyCommand implements CommandExecutor {
 					while(tool==null){
 						tool = plugin.getDiabloDrops().dropsAPI.getItem();
 					}
-					com.modcrafting.toolapi.lib.Tool t = new com.modcrafting.toolapi.lib.Tool(tool);
+					Tool t = new Tool(tool);
 					String name = t.getName();
 					player.getInventory().addItem(t);
 					player.updateInventory();
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 					sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
-					sender.sendMessage(ChatColor.DARK_AQUA + "For: " + ChatColor.BLUE + name);
+					sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
+							+ChatColor.GRAY + "For: " + name);
 					return true;
 				}
 			}
-			if(args[1].equalsIgnoreCase("tier")){
+			if(args[1].equalsIgnoreCase("tier")&&plugin.getDiabloDrops()!=null){
 				for(com.modcrafting.diablodrops.tier.Tier tier:plugin.getDiabloDrops().tiers){
-					if(args[2].equalsIgnoreCase(tier.getName())){
-						double price = plugin.ddConfig.getDouble(tier.getName()+".price", 1000);
-						if(price < bal){
+					if(args[2].equalsIgnoreCase(tier.getName())&&plugin.ddConfig.getBoolean("DiabloDrop.Tier.Enabled",true)){
+						double price = plugin.ddConfig.getDouble("DiabloDrop."+tier.getName()+".Price", 1000);
+						if(price > bal){
 							sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 							return true;
 						}
@@ -93,13 +88,14 @@ public class IdentifyCommand implements CommandExecutor {
 						while(tool==null){
 							tool = plugin.getDiabloDrops().dropsAPI.getItem(tier);
 						}
-						com.modcrafting.toolapi.lib.Tool t = new com.modcrafting.toolapi.lib.Tool(tool);
+						Tool t = new Tool(tool);
 						String name = t.getName();
 						player.getInventory().addItem(t);
 						player.updateInventory();
 						plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 						sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
-						sender.sendMessage(ChatColor.DARK_AQUA + "For: " + ChatColor.BLUE + name);
+						sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
+								+ChatColor.GRAY + "For: " + name);
 						return true;								
 					}						
 				}
@@ -107,121 +103,224 @@ public class IdentifyCommand implements CommandExecutor {
 						+ChatColor.GRAY+" Tier: "+args[2]+" not found.");
 				return true;
 			}
-			if(args[1].equalsIgnoreCase("name")){
+			if(args[1].equalsIgnoreCase("tome")&&plugin.getDiabloDrops()!=null){
+				if(!plugin.ddConfig.getBoolean("DiabloDrop.Tome.Enabled",true)) return true;
+				double price = plugin.ddConfig.getDouble("DiabloDrop.Tome.Price", 1000);
+				if(price > bal){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+					return true;
+				}
+				com.modcrafting.diablodrops.items.Tome tome = new com.modcrafting.diablodrops.items.Tome();
+				player.getInventory().addItem(tome);
+				player.updateInventory();
+				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+				sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
+				sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
+						+ChatColor.GRAY + "For An Identification Tome. ");
+				return true;								
+				
+			}
+			if(args[1].equalsIgnoreCase("gem")&&plugin.getDiabloDrops()!=null){
+				if(!plugin.ddConfig.getBoolean("DiabloDrop.SocketGem.Enabled",true)) return true;
+				double price = plugin.ddConfig.getDouble("DiabloDrop.SocketGem.Price", 1000);
+				if(price > bal){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+					return true;
+				}
+				com.modcrafting.diablodrops.items.Tome tome = new com.modcrafting.diablodrops.items.Tome();
+				player.getInventory().addItem(tome);
+				player.updateInventory();
+				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+				sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
+				sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
+						+ChatColor.GRAY + "For An Identification Tome. ");
+				return true;								
+				
+			}
+			if(args[1].equalsIgnoreCase("name")
+					&&plugin.getConfig().getBoolean("Name.Enabled",true)
+					&&hasPerms(sender,"identify.buy.name")){
 				double price = 1000;
-				String name = new String();
+				String name = combineSplit(2, args, " ");
+				name = ChatColor.translateAlternateColorCodes('&', name);
 				ItemStack item = player.getItemInHand();
 				if (item==null||item.getType() == Material.AIR){
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your Not Holding Anything.");
 					return true;
 				}
-				if(plugin.ddConfig.getBoolean("diablodrop.name.flat",true)){
-					price = plugin.ddConfig.getDouble("diablodrop.name.flatrate", 1000);
-					if(price < bal){
+				if(plugin.getConfig().getBoolean("Name.Flat",true)){
+					price = plugin.ddConfig.getDouble("Name.FlatRate", 1000);
+					if(price > bal){
 						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+						sender.sendMessage(ChatColor.BLUE + "Name Cost: "+String.valueOf(price));
 						return true;
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}else{
-					price = plugin.ddConfig.getDouble("diablodrop.name.priceper", 10);
+					price = plugin.ddConfig.getDouble("Name.PerLetter", 10);
 					price = price*name.length();
-					if(price < bal){
+					if(price > bal){
 						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+						sender.sendMessage(ChatColor.BLUE + "Name Cost: "+String.valueOf(price));
 						return true;
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}
-				com.modcrafting.toolapi.lib.Tool t = new com.modcrafting.toolapi.lib.Tool(item);
+				Tool t = new Tool(item);
 				t.setName(name);
-				sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
-						+ChatColor.GRAY+" Name: "+name+" was set for "+ChatColor.GOLD+String.valueOf(price));
+				sender.sendMessage(ChatColor.GRAY+" Name: "+name+ChatColor.GRAY+" was set for "+ChatColor.GOLD+String.valueOf(price));
 				return true;
 			}
-			if(args[1].equalsIgnoreCase("lore")){
-				//TODO: Working my way down.
+			if(args[1].equalsIgnoreCase("lore")
+					&&plugin.getConfig().getBoolean("Lore.Enabled",true)
+					&&hasPerms(sender,"identify.buy.lore")){
+				if(plugin.getDiabloDrops()!=null&&!sender.hasPermission("identify.override.lore")){
+					sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"+ChatColor.GRAY+"Option disabled.");
+					return true;
+				}
+				double price = 1000;
+				
+				String lore = combineSplit(2, args, " ");
+                lore = ChatColor.translateAlternateColorCodes(
+                        "&".toCharArray()[0], lore);
+				if(!plugin.ddConfig.getBoolean("Lore.PerLetterLine",false)){
+					price = plugin.ddConfig.getDouble("Lore.FlatRatePerLine", 1000);
+					price = lore.split(",").length*price;
+					if(price > bal){
+						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+						sender.sendMessage(ChatColor.BLUE + "Lore Cost: "+String.valueOf(price));
+						return true;
+					}
+					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+				}else{
+					price = plugin.ddConfig.getDouble("Lore.PerRate", 10);
+					price = lore.length()*price;
+					if(price > bal){
+						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+						sender.sendMessage(ChatColor.BLUE + "Lore Cost: "+String.valueOf(price));
+						return true;
+					}
+					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+				}
+                Tool tool = new Tool(player.getItemInHand());
+                for (String s : lore.split(","))
+                {
+                    if (s.length() > 0)
+                        tool.addLore(s);
+                }
+                sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
+				for(String s:lore.split(",")){
+                    if (s.length() > 0)
+                        sender.sendMessage(s);
+				}
+                sender.sendMessage(ChatColor.DARK_AQUA + "Lore Set.");
+				return true;
 			}
-			if(args[1].equalsIgnoreCase("random")){
+			if(args[1].equalsIgnoreCase("random")&&hasPerms(sender,"identify.buy.random")){
 				plugin.buy.buyRandom(player);
 				return true;						
 			}
-			if(args[1].equalsIgnoreCase("enchant")&&args.length>2){
+			if(args[1].equalsIgnoreCase("enchant")&&args.length>2&&hasPerms(sender,"identify.buy.enchant")){
 				plugin.buy.buyList(player, args); 
 				return true;
 			}
 		}
-		
-		if(args[0].equalsIgnoreCase("help")){
-			if(plugin.help.showHelp(player))return true;
-			return false;
-		}
+		/*
+        if (args[2].equalsIgnoreCase("remove"))
+        {
+            ItemStack is = player.getItemInHand();
+            Map<Enchantment, Integer> hm = new HashMap<Enchantment, Integer>();
+            for (Enchantment e1 : is.getEnchantments().keySet())
+            {
+                if (!e1.getName().equalsIgnoreCase(args[3]))
+                {
+                    hm.put(e1, is.getEnchantmentLevel(e1));
+                }
+            }
+            is.addUnsafeEnchantments(hm);
+            player.sendMessage(ChatColor.GREEN
+                    + "Removed enchantment.");
+            return true;
 
-		if(args[0].equalsIgnoreCase("reload")){
-			if (sender.hasPermission("")){
-				plugin.getLogger().info("disabling.");
-				plugin.getServer().getPluginManager().disablePlugin(plugin);
-				plugin.getLogger().info("attempting restart.");
-				plugin.getServer().getPluginManager().enablePlugin(plugin);
-				return true;
-			}
+        }
+        */
+		if(args[0].equalsIgnoreCase("help")){
+			showHelp(player);
+			return true;
 		}
-		if(args[0].equalsIgnoreCase("set")){
-				if (args.length < 2){
-					sender.sendMessage(ChatColor.GRAY + "/Identify Set <levelprice/randomprice/random>");
-					return true;
-				}
-				if (sender.hasPermission("")){
-						if(args[1].equalsIgnoreCase("levelprice")){
-							if (args.length < 3){
-								sender.sendMessage("/Identify Set levelprice <amount>");
-								return true;
-							}
-							YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-							String p = args[2];
-							int pvar = Integer.parseInt(p);
-							config.set("prices.levelprice", (int) pvar);
-							plugin.saveConfig();
-							sender.sendMessage("Level Enchant Price Set to " + p + "!");
-							plugin.getLogger().info("Level Enchant Price Set to " + p + "!");
-							plugin.getServer().getPluginManager().disablePlugin(plugin);
-							plugin.getServer().getPluginManager().enablePlugin(plugin);
-							return true;
-						}
-						if(args[1].equalsIgnoreCase("randomprice")){
-							if (args.length < 3){
-								sender.sendMessage("/Identify Set randomprice <amount>");
-								return true;
-							}
-							YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-							String p = args[2];
-							int pvar = Integer.parseInt(p);
-							config.set("prices.randomprice", (int) pvar);
-							plugin.saveConfig();
-							sender.sendMessage("iRandom Enchant Price Set to " + p + "!");
-							plugin.getLogger().info("Random Enchant Price Set to " + p + "!");
-							return true;
-						}
-						if(args[1].equalsIgnoreCase("random")){
-							if (args.length < 3){
-								sender.sendMessage("/Identify Set random <true/false>");
-								return true;
-							}
-							boolean pvar = args[2].equalsIgnoreCase("true");
-							YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-							config.set("random", (boolean) pvar);
-							plugin.saveConfig();
-							sender.sendMessage("Random Enchant Set to " + args[2] + "!");
-							plugin.getLogger().info("Random Enchant Set to " + args[2] + "!");
-							plugin.getServer().getPluginManager().disablePlugin(plugin);
-							plugin.getServer().getPluginManager().enablePlugin(plugin);
-							return true;
-						}
-					return true;
-				}else{
-					sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
-					return true;
-				}
+		if(args[0].equalsIgnoreCase("reload")&&hasPerms(sender,"identify.reload")){
+			plugin.getServer().getPluginManager().disablePlugin(plugin);
+			plugin.getServer().getPluginManager().enablePlugin(plugin);
+			plugin.reloadConfig();
+			return true;
 		}
-		
+		if(args[0].equalsIgnoreCase("clear")&&hasPerms(sender,"identify.clear")){
+			ItemStack it = player.getItemInHand();
+			Material mat = it.getType();
+			short dam = it.getDurability();
+			ItemStack its = new ItemStack(mat,1,dam);
+			player.setItemInHand(its);
+			sender.sendMessage(ChatColor.DARK_AQUA+"Item cleared");
+			return true;
+		}
 		return false;
 	}
+
+	public boolean showHelp(Player sender) {
+		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Help");
+		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/identify <Buy/List/Reload/Clear/Help>");
+		if(plugin.getDiabloDrops()!=null){
+			sender.sendMessage(ChatColor.DARK_AQUA + "/identify buy <DD/Tier/Name/Enchant/Lore/Random>");
+		}else{
+			sender.sendMessage(ChatColor.DARK_AQUA + "/identify buy <Name/Enchant/Lore/Random>");			
+		}
+		sender.sendMessage(ChatColor.DARK_AQUA + "/Identify buy enchant {ID#/Name} (level/MAX)");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/Identify buy name &7AwezomeSword");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/Identify buy lore &7Enter text here,&bseperated by comma");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/identify list");
+		sender.sendMessage(ChatColor.DARK_AQUA + "/identify reload");
+		return true;
+	}
+
+	public void showList(Player sender){
+		ItemStack item = sender.getItemInHand();
+		String itemName = item.getType().toString();
+		sender.sendMessage(ChatColor.DARK_AQUA + "Identify Shop  {Current Item: " + itemName + " }");
+		sender.sendMessage(ChatColor.DARK_AQUA + "-----------------------------------------");
+		sender.sendMessage(ChatColor.GOLD + "For a random enchantment type /identify buy random");
+		sender.sendMessage(ChatColor.GOLD + "Use /identify buy enchant [id# or name] [lvl]");
+		for(int i=0;i<Enchantment.values().length;i++){
+			Enchantment e = Enchantment.values()[i];
+			if(e.canEnchantItem(item)){
+				sender.sendMessage(ChatColor.BLUE + "ID#"+String.valueOf(EnchantUtil.getID(e))+" "+e.getName()+" +1");
+			}
+		}
+	}
+	public boolean hasPerms(CommandSender sender,String string){
+		if (!sender.hasPermission(string)){
+			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			return false;
+		}
+		return true;
+	}
+	
+    public String combineSplit(int startIndex, String[] string, String seperator)
+    {
+        StringBuilder builder = new StringBuilder();
+        if (string.length >= 1)
+        {
+            for (int i = startIndex; i < string.length; i++)
+            {
+                builder.append(string[i]);
+                builder.append(seperator);
+            }
+            if (builder.length() > seperator.length())
+            {
+                builder.deleteCharAt(builder.length() - seperator.length()); // remove
+                return builder.toString();
+            }
+        }
+        return "";
+    }
 }

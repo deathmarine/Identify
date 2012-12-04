@@ -10,43 +10,35 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.modcrafting.identify.commands.Buying;
-import com.modcrafting.identify.commands.Enchant;
-import com.modcrafting.identify.commands.Help;
+import com.modcrafting.identify.commands.EnchantUtil;
 import com.modcrafting.identify.commands.IdentifyCommand;
-import com.modcrafting.identify.commands.List;
 
 public class Identify extends JavaPlugin{
-	public Enchant enchantments = new Enchant();
+	public EnchantUtil enchantments = new EnchantUtil();
 	public net.milkbowl.vault.economy.Economy economy;
 	public Buying buy;
-	public Help help;
-	public List list;
 	public FileConfiguration ddConfig = new YamlConfiguration();
 	
 	public void onEnable() {
-		if(getDiabloDrops()==null){
-			this.getLogger().warning("Shutting down Identify. Could not find DiabloDrops.");
-			this.setEnabled(false);
-			return;
-		}
+		buy = new Buying(this);
+		this.getDataFolder().mkdir();
+		writeDefault("config.yml");
+		loadCommands();
 		if(!setupEconomy()){
 			this.getLogger().warning("Shutting down Identify. Could not find Vault.");
 			this.setEnabled(false);
 			return;
 			
+		}		
+		if(getDiabloDrops()!=null){
+			writeDefault("diablodrops.yml");
+			try {
+				ddConfig.load(new File(this.getDataFolder(),"diablodrops.yml"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return;
 		}
-		list = new List(this);
-		help = new Help(this);
-		buy = new Buying(this);
-		this.getDataFolder().mkdir();
-		writeDefault("config.yml");
-		writeDefault("diablodrops.yml");
-		try {
-			ddConfig.load(new File(this.getDataFolder(),"diablodrops.yml"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		loadCommands();
 		
 	}
 	public void loadCommands(){

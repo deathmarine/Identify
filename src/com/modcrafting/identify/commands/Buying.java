@@ -23,8 +23,8 @@ public class Buying {
 	}
 	
 	public void buyList(Player sender, String[] args){
-		int iprice = config.getInt("prices.levelprice", 5000);
-		int max = config.getInt("maxLevel", 10);
+		int iprice = config.getInt("Enchantment.Price", 1000);
+		int max = config.getInt("Enchantment.Max", 10);
 		ItemStack item = sender.getItemInHand();
 		if (item==null||item.getType() == Material.AIR){
 			sender.sendMessage("Your Not Holding Anything.");
@@ -44,7 +44,7 @@ public class Buying {
 			}
 			enchant = Enchantment.values()[pvar];
 		}
-		String enchName = enchant.toString();
+		String enchName = enchant.getName();
 		
 		//Power
 		int lvl = 1;
@@ -84,6 +84,8 @@ public class Buying {
 	
 	public void buyAll(Player sender){
 		int lvl = config.getInt("Enchantment.Max", 10);
+		
+		//TODO check for max
 		double price = config.getDouble("Enchantment.Price", 1000)*21*lvl;
 		ItemStack item = sender.getItemInHand();
 		if (item.getType() == Material.AIR){
@@ -129,12 +131,10 @@ public class Buying {
 			sender.sendMessage(ChatColor.RED+"This item is already identified.");
 			return;
 		}else{
-			if(plugin.setupEconomy()){
-				double bal = plugin.economy.getBalance(sender.getName());
-				if(price > bal){
-					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
-					return;
-				}
+			double bal = plugin.economy.getBalance(sender.getName());
+			if(price > bal){
+				sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+				return;
 			}
 		}
 		String itemName = item.getType().name();

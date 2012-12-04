@@ -3,7 +3,44 @@ main: com.modcrafting.identify.Identify
 version: 1.0
 website: http://modcrafting.com
 author: Deathmarine
+depend: [Vault]
+softdepend: [DiabloDrops]
 commands:
   identify:
     description: Command Access
-    usage: /<command> <help/list/set/buy>
+    usage: /<command> <Buy/List/Reload/Clear/Help>
+    permission: identify.command
+permissions:
+  identify.*:
+    description: Allows access to everything.
+    default: op
+    children:
+      identify.command: true
+      identify.buy.*: true
+      identify.list: true
+  identify.command:
+    description: Allows access to the command structure.
+  identify.buy:
+    description: Allows the ability to access buy options.
+  identify.buy.*:
+    description: Allows access to all the buy options.
+    children:
+      identify.buy.name: true
+      identify.buy.lore: true
+      identify.buy.random: true
+      identify.buy.enchant: true
+  identify.buy.name:
+    description: Allows buying name changes.
+  identify.buy.lore:
+    description: Allows buying lore.
+  identify.buy.random:
+    description: Allows buying random enchants.
+  identify.buy.enchant:
+    description: Allows buying individual enchants.
+  identify.list:
+    description: Allows the ability to list enchantments.
+  identify.override.lore:
+    default: false
+    description: Overrides Hook Block for DiabloDrops.
+  identify.reload:
+    description: Reloads the plugin.

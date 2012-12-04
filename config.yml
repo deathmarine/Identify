@@ -1,8 +1,20 @@
-#enables random Enchant on /identify buy#
-random: true
-#How much to charge for Identification#
-prices:
-  randomprice: 1000
-  levelprice: 500
-randomMax: 5
-maxLevel: 10
+SafeEnchant:
+  Enabled: true
+Enchantment:
+  Price: 500
+  Max: 10
+Random:
+  Price: 1000
+  Enchantments:
+    Max: 5  
+Name:
+  Enabled: true
+  Flat: true
+  FlatRate: 1000
+#If flat is false, defaults to charge per letter#
+  PerLetterRate: 10
+Lore:
+  Enabled: true
+  FlatRatePerLine: 1000
+  PerLetterLine: false
+  PerRate: 10
