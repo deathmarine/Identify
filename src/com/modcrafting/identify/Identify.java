@@ -2,16 +2,13 @@ package com.modcrafting.identify;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import com.modcrafting.identify.commands.Buying;
 import com.modcrafting.identify.commands.Enchant;
 import com.modcrafting.identify.commands.Help;
@@ -19,76 +16,42 @@ import com.modcrafting.identify.commands.IdentifyCommand;
 import com.modcrafting.identify.commands.List;
 
 public class Identify extends JavaPlugin{
-	public final static Logger log = Logger.getLogger("Minecraft");
-	public String maindir = "plugins/Identify/";
-	public boolean random;
-	public Enchant enchantments;
-	public net.milkbowl.vault.permission.Permission permission = null;
-	public net.milkbowl.vault.economy.Economy economy = null;
-	public Buying buy = new Buying(this);
-	public Help help = new Help(this);
-	public List list = new List(this);
-	public void onDisable() {
-		System.out.println("Identify disabled.");
-	}
+	public Enchant enchantments = new Enchant();
+	public net.milkbowl.vault.economy.Economy economy;
+	public Buying buy;
+	public Help help;
+	public List list;
+	public FileConfiguration ddConfig = new YamlConfiguration();
 	
-	protected void createDefaultConfiguration(String name) {
-		File actual = new File(getDataFolder(), name);
-		if (!actual.exists()) {
-
-			InputStream input =
-				this.getClass().getResourceAsStream("/" + name);
-			if (input != null) {
-				FileOutputStream output = null;
-
-				try {
-					output = new FileOutputStream(actual);
-					byte[] buf = new byte[8192];
-					int length = 0;
-					while ((length = input.read(buf)) > 0) {
-						output.write(buf, 0, length);
-					}
-
-					log.log(Level.INFO, getDescription().getName()
-							+ ": Default configuration file written: " + name);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						if (input != null)
-							input.close();
-					} catch (IOException e) {}
-
-					try {
-						if (output != null)
-							output.close();
-					} catch (IOException e) {}
-				}
-			}
-		}
-	}
 	public void onEnable() {
-		PluginDescriptionFile pdfFile = this.getDescription();
-		new File(maindir).mkdir();
-		createDefaultConfiguration("config.yml");
-		YamlConfiguration Config = (YamlConfiguration) getConfig();
-		random = Config.getBoolean("random", false);
+		if(getDiabloDrops()==null){
+			this.getLogger().warning("Shutting down Identify. Could not find DiabloDrops.");
+			this.setEnabled(false);
+			return;
+		}
+		if(!setupEconomy()){
+			this.getLogger().warning("Shutting down Identify. Could not find Vault.");
+			this.setEnabled(false);
+			return;
+			
+		}
+		list = new List(this);
+		help = new Help(this);
+		buy = new Buying(this);
+		this.getDataFolder().mkdir();
+		writeDefault("config.yml");
+		writeDefault("diablodrops.yml");
+		try {
+			ddConfig.load(new File(this.getDataFolder(),"diablodrops.yml"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		loadCommands();
-		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " is enabled!" );
 		
 	}
 	public void loadCommands(){
 		getCommand("identify").setExecutor(new IdentifyCommand(this));
-		return;
 	}
-	public Boolean setupPermissions()
-    {
-        RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            permission = permissionProvider.getProvider();
-        }
-        return (permission != null);
-    }
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
@@ -96,5 +59,39 @@ public class Identify extends JavaPlugin{
 		}
 			return (economy != null);
 	}
+	public com.modcrafting.diablodrops.DiabloDrops getDiabloDrops() {
+		Plugin plugin = getServer().getPluginManager().getPlugin("DiabloDrops");
+
+		if (plugin == null || !(plugin instanceof com.modcrafting.diablodrops.DiabloDrops)) {
+			return null;
+		}
+
+		return (com.modcrafting.diablodrops.DiabloDrops) plugin;
+	}
+	 public void writeDefault(String name)
+	    {
+	        File actual = new File(this.getDataFolder(), name);
+	        if (!actual.exists())
+	        {
+	            try
+	            {
+	                InputStream input = this.getClass().getResourceAsStream(
+	                        "/"+name);
+	                FileOutputStream output = new FileOutputStream(actual);
+	                byte[] buf = new byte[8192];
+	                int length = 0;
+	                while ((length = input.read(buf)) > 0)
+	                {
+	                    output.write(buf, 0, length);
+	                }
+	                output.close();
+	                input.close();
+	            }
+	            catch (Exception e)
+	            {
+	            	e.printStackTrace();
+	            }
+	        }
+	    }
 }
 

@@ -1,14 +1,14 @@
 package com.modcrafting.identify.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import com.modcrafting.identify.Identify;
@@ -16,58 +16,21 @@ import com.modcrafting.identify.Identify;
  * 
  */
 public class IdentifyCommand implements CommandExecutor {
-	public static final Logger log = Logger.getLogger("Minecraft");
 	Identify plugin;
 	public IdentifyCommand(Identify identify) {
 		this.plugin = identify;
 	}
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-    	boolean auth = true;
-		boolean adminAuth = false;
-		Player player = null;
-		
-		if (sender instanceof Player){
-			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "identify.use")) auth = true;
-				if (plugin.permission.has(player, "identify.admin")) adminAuth = true;
-			}else{
-				if (player.isOp()){
-				 auth = true;
-				 adminAuth = true;//defaulting to Op if no vault doesn't take or node
-				}
-			 }
-		}else{
-			auth = true;
-			adminAuth = true;//if sender is not a player - Console
-		}
-		
-		if (!auth){
+		if (!sender.hasPermission("")){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-		//Check and display differences in config
-		if (args.length < 1){
-			if (auth){
-				if (plugin.random){
-					YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-					int randprice = config.getInt("prices.randomprice");
-					sender.sendMessage(ChatColor.DARK_AQUA + "Stay a while and Listen");
-					sender.sendMessage(ChatColor.DARK_AQUA + "Identify your item for " + ChatColor.BLUE + Integer.toString(randprice));
-					sender.sendMessage(ChatColor.DARK_AQUA + "Use /identify buy.");
-					return true;
-				}else{
-					YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-					int randprice = config.getInt("prices.levelprice");
-					sender.sendMessage(ChatColor.DARK_AQUA + "Stay a while and Listen");
-					sender.sendMessage(ChatColor.DARK_AQUA + "Enchant your item for " + ChatColor.BLUE + Integer.toString(randprice));
-					sender.sendMessage(ChatColor.DARK_AQUA + "Use /identify list.");
-					return true;
-				}
-			}
+		Player player = null;
+		if (sender instanceof Player){
+			player = (Player)sender;
 		}
-		
 		if(args[0].equalsIgnoreCase("list")){
 
 			if(args.length < 2){
@@ -93,31 +56,98 @@ public class IdentifyCommand implements CommandExecutor {
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("buy")){
-			YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-				if(auth){
-						if(args.length < 2){
-							if(plugin.buy.buyRandom(player))return true;
-						}
-						if(args[1].equalsIgnoreCase("random")){
-							if(plugin.buy.buyRandom(player))return true;							
-						}
-						String lvl =  null;
-						if(args.length < 3){
-							lvl = "1";
-						}else{
-							if(args[2].equalsIgnoreCase("max")){
-								String max = config.getString("maxLevel", "10");
-								lvl = max.trim();
-							}else{
-								lvl = args[2];							
-							}
-						}
-						if(plugin.buy.buyList(player, args[1], lvl)) return true;
-						return false;
+			double bal = plugin.economy.getBalance(sender.getName());
+			if(args.length<2){
+				sender.sendMessage(ChatColor.GRAY+" /identify buy <dd|tier|name|enchant|lore|random>");
+				return true;
+			}
+			if(args[1].equalsIgnoreCase("diablodrop")||args[1].equalsIgnoreCase("dd")){
+				double price = plugin.ddConfig.getDouble("diablodrop.price", 1000);
+				if(price > bal){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+					return true;
+				}else{
+					CraftItemStack tool = plugin.getDiabloDrops().dropsAPI.getItem();
+					while(tool==null){
+						tool = plugin.getDiabloDrops().dropsAPI.getItem();
 					}
-				
-				
-				return false;
+					com.modcrafting.toolapi.lib.Tool t = new com.modcrafting.toolapi.lib.Tool(tool);
+					String name = t.getName();
+					player.getInventory().addItem(t);
+					player.updateInventory();
+					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+					sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
+					sender.sendMessage(ChatColor.DARK_AQUA + "For: " + ChatColor.BLUE + name);
+					return true;
+				}
+			}
+			if(args[1].equalsIgnoreCase("tier")){
+				for(com.modcrafting.diablodrops.tier.Tier tier:plugin.getDiabloDrops().tiers){
+					if(args[2].equalsIgnoreCase(tier.getName())){
+						double price = plugin.ddConfig.getDouble(tier.getName()+".price", 1000);
+						if(price < bal){
+							sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+							return true;
+						}
+						CraftItemStack tool = plugin.getDiabloDrops().dropsAPI.getItem(tier);
+						while(tool==null){
+							tool = plugin.getDiabloDrops().dropsAPI.getItem(tier);
+						}
+						com.modcrafting.toolapi.lib.Tool t = new com.modcrafting.toolapi.lib.Tool(tool);
+						String name = t.getName();
+						player.getInventory().addItem(t);
+						player.updateInventory();
+						plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+						sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
+						sender.sendMessage(ChatColor.DARK_AQUA + "For: " + ChatColor.BLUE + name);
+						return true;								
+					}						
+				}
+				sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
+						+ChatColor.GRAY+" Tier: "+args[2]+" not found.");
+				return true;
+			}
+			if(args[1].equalsIgnoreCase("name")){
+				double price = 1000;
+				String name = new String();
+				ItemStack item = player.getItemInHand();
+				if (item==null||item.getType() == Material.AIR){
+					sender.sendMessage(ChatColor.DARK_AQUA + "Your Not Holding Anything.");
+					return true;
+				}
+				if(plugin.ddConfig.getBoolean("diablodrop.name.flat",true)){
+					price = plugin.ddConfig.getDouble("diablodrop.name.flatrate", 1000);
+					if(price < bal){
+						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+						return true;
+					}
+					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+				}else{
+					price = plugin.ddConfig.getDouble("diablodrop.name.priceper", 10);
+					price = price*name.length();
+					if(price < bal){
+						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
+						return true;
+					}
+					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
+				}
+				com.modcrafting.toolapi.lib.Tool t = new com.modcrafting.toolapi.lib.Tool(item);
+				t.setName(name);
+				sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
+						+ChatColor.GRAY+" Name: "+name+" was set for "+ChatColor.GOLD+String.valueOf(price));
+				return true;
+			}
+			if(args[1].equalsIgnoreCase("lore")){
+				//TODO: Working my way down.
+			}
+			if(args[1].equalsIgnoreCase("random")){
+				plugin.buy.buyRandom(player);
+				return true;						
+			}
+			if(args[1].equalsIgnoreCase("enchant")&&args.length>2){
+				plugin.buy.buyList(player, args); 
+				return true;
+			}
 		}
 		
 		if(args[0].equalsIgnoreCase("help")){
@@ -126,27 +156,20 @@ public class IdentifyCommand implements CommandExecutor {
 		}
 
 		if(args[0].equalsIgnoreCase("reload")){
-			if(adminAuth){
-				log.log(Level.SEVERE, "[Identify] disabling.");
+			if (sender.hasPermission("")){
+				plugin.getLogger().info("disabling.");
 				plugin.getServer().getPluginManager().disablePlugin(plugin);
-				log.log(Level.SEVERE, "[Identify] attempting restart.");
+				plugin.getLogger().info("attempting restart.");
 				plugin.getServer().getPluginManager().enablePlugin(plugin);
 				return true;
 			}
 		}
-
-		if(args[0].equalsIgnoreCase("version")){
-			PluginDescriptionFile pdfFile = plugin.getDescription();
-			sender.sendMessage("[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " is enabled!");
-			return true;
-		}
-		
 		if(args[0].equalsIgnoreCase("set")){
 				if (args.length < 2){
 					sender.sendMessage(ChatColor.GRAY + "/Identify Set <levelprice/randomprice/random>");
 					return true;
 				}
-				if (adminAuth){
+				if (sender.hasPermission("")){
 						if(args[1].equalsIgnoreCase("levelprice")){
 							if (args.length < 3){
 								sender.sendMessage("/Identify Set levelprice <amount>");
@@ -158,7 +181,7 @@ public class IdentifyCommand implements CommandExecutor {
 							config.set("prices.levelprice", (int) pvar);
 							plugin.saveConfig();
 							sender.sendMessage("Level Enchant Price Set to " + p + "!");
-							Identify.log.log(Level.INFO, "[Identify] Level Enchant Price Set to " + p + "!");
+							plugin.getLogger().info("Level Enchant Price Set to " + p + "!");
 							plugin.getServer().getPluginManager().disablePlugin(plugin);
 							plugin.getServer().getPluginManager().enablePlugin(plugin);
 							return true;
@@ -174,9 +197,7 @@ public class IdentifyCommand implements CommandExecutor {
 							config.set("prices.randomprice", (int) pvar);
 							plugin.saveConfig();
 							sender.sendMessage("iRandom Enchant Price Set to " + p + "!");
-							Identify.log.log(Level.INFO, "[Identify] Random Enchant Price Set to " + p + "!");
-							plugin.getServer().getPluginManager().disablePlugin(plugin);
-							plugin.getServer().getPluginManager().enablePlugin(plugin);
+							plugin.getLogger().info("Random Enchant Price Set to " + p + "!");
 							return true;
 						}
 						if(args[1].equalsIgnoreCase("random")){
@@ -189,7 +210,7 @@ public class IdentifyCommand implements CommandExecutor {
 							config.set("random", (boolean) pvar);
 							plugin.saveConfig();
 							sender.sendMessage("Random Enchant Set to " + args[2] + "!");
-							Identify.log.log(Level.INFO, "[Identify] Random Enchant Set to " + args[2] + "!");
+							plugin.getLogger().info("Random Enchant Set to " + args[2] + "!");
 							plugin.getServer().getPluginManager().disablePlugin(plugin);
 							plugin.getServer().getPluginManager().enablePlugin(plugin);
 							return true;

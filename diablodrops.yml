@@ -1,0 +1,31 @@
+DiabloDrop:
+    Random:
+        Enabled: true
+        Price: 5000
+    Tier:
+        Enabled: true
+        Legendary:
+            Price: 100000
+        Lore:
+            Price: 50000
+        Set:
+            Price: 50000
+        Rare:
+            Price: 25000
+        Magical:
+            Price: 10000
+        Unidentified:
+            Price:  5000
+    Name:
+        Enabled: true
+        Flat: true
+        FlatRate: 1000
+        PerLetter: false
+        PerRate: 10
+    Lore:
+        Enabled: true
+        FlatLine: true
+        FlatRate: 1000
+        PerLetterLine: false
+        PerRate: 10
+            
