@@ -45,8 +45,6 @@ public class Buying {
 			enchant = Enchantment.values()[pvar];
 		}
 		String enchName = enchant.getName();
-		
-		//Power
 		int lvl = 1;
 		try{
 			lvl = Integer.parseInt(args[3]);
@@ -66,8 +64,6 @@ public class Buying {
 			sender.sendMessage(ChatColor.DARK_AQUA + "Your can't set this enchantment!");
 			return;
 		}
-		
-		//Economy
 		int price = lvl * iprice;
 		String eitemPrice = Integer.toString(price);
 		double bal = plugin.economy.getBalance(sender.getName());
@@ -89,8 +85,6 @@ public class Buying {
 	
 	public void buyAll(Player sender){
 		int lvl = config.getInt("Enchantment.Max", 10);
-		
-		//TODO check for max
 		double price = config.getDouble("Enchantment.Price", 1000)*21*lvl;
 		ItemStack item = sender.getItemInHand();
 		if (item.getType() == Material.AIR){

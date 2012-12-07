@@ -1,0 +1,53 @@
+<project name="Identify" default="package">
+
+	<target name="init" description="Initialize directories, etc.">
+		<mkdir dir="bin" />
+		<mkdir dir="dist" />
+	</target>
+
+	<target name="clean" depends="init" description="Clean up all the temp stuff and previous builds">
+		<delete>
+			<fileset dir="bin" />
+			<fileset dir="dist" />
+		</delete>
+	</target>
+
+	<target name="compile" depends="clean, init" description="Compile all the code">
+		<javac debug="true" debuglevel="lines,vars,source" deprecation="true" srcdir="src" destdir="bin">
+			<classpath>
+				<fileset dir="lib" includes="*.jar" />
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="document" depends="compile" description="Create JavaDocs">
+	        <delete dir="javadoc" includes="**/*" failonerror="false" />
+	            <javadoc packagenames="com.modcrafting.*"
+	                            sourcepath="src"
+	                            destdir="javadoc"
+	                            access="public"
+	                            windowtitle="Identify"
+	                            verbose="false"
+	                            author="true"
+	                            version="true">
+	                <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+	                <link href="http://jd.bukkit.org/apidocs/" />
+
+	                <classpath>
+	                    <fileset dir="lib" includes="**/*.jar"/>
+	                </classpath>
+	                <bottom>
+	                    <![CDATA[<b>deathmarine, 2012</b>]]>
+	                </bottom>
+	            </javadoc>
+	    </target>
+
+	<target name="package" depends="document" description="Make the distributable jar file">
+		<copy todir="bin" overwrite="true">
+			<fileset dir="." includes="plugin.yml,diablodrops.yml,config.yml" />
+		</copy>
+		<jar basedir="bin" jarfile="dist/${ant.project.name}.jar" defaultexcludes="true" />
+	</target>
+
+
+</project>
