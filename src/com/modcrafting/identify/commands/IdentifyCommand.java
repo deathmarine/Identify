@@ -1,5 +1,7 @@
 package com.modcrafting.identify.commands;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -9,6 +11,8 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.modcrafting.diablodrops.items.Socket;
 import com.modcrafting.identify.Identify;
 import com.modcrafting.toolapi.lib.Tool;
 /*
@@ -28,6 +32,7 @@ public class IdentifyCommand implements CommandExecutor {
 		if (sender instanceof Player){
 			player = (Player)sender;
 		}
+		if(args.length<1) return false;
 		if(args[0].equalsIgnoreCase("list")&&hasPerms(sender,"identify.list")){
 
 			if(args.length < 2){
@@ -127,13 +132,15 @@ public class IdentifyCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
 				}
-				com.modcrafting.diablodrops.items.Tome tome = new com.modcrafting.diablodrops.items.Tome();
+	            List<String> l = plugin.getDiabloDrops().config.getStringList("SocketItem.Items");
+	            com.modcrafting.diablodrops.items.Socket tome = new Socket(Material.valueOf(l.get(
+	            		plugin.getDiabloDrops().gen.nextInt(l.size())).toUpperCase()));
 				player.getInventory().addItem(tome);
 				player.updateInventory();
 				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
 				sender.sendMessage(ChatColor.GOLD+"[DiabloDrops]"
-						+ChatColor.GRAY + "For An Identification Tome. ");
+						+ChatColor.GRAY + "For An Socket Gem. ");
 				return true;								
 				
 			}
