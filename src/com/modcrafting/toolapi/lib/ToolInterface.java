@@ -2,7 +2,7 @@ package com.modcrafting.toolapi.lib;
 
 import java.util.List;
 
-import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.v1_4_5.NBTTagCompound;
 
 public interface ToolInterface
 {
