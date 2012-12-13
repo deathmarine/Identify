@@ -2,8 +2,6 @@ package com.modcrafting.toolapi.lib;
 
 import java.util.List;
 
-import net.minecraft.server.v1_4_5.NBTTagCompound;
-
 public interface ToolInterface
 {
     /**
@@ -42,13 +40,6 @@ public interface ToolInterface
     public Integer getRepairCost();
 
     /**
-     * Gets the compound for the item.
-     * 
-     * @return tag
-     */
-    public NBTTagCompound getTag();
-
-    /**
      * Sets the lore of the Tool
      */
     public void setLore(List<String> lore);
@@ -63,10 +54,5 @@ public interface ToolInterface
      */
     public void setRepairCost(Integer i);
 
-    /**
-     * Sets the compound for the item.
-     * 
-     * @param tag
-     */
-    public void setTag(NBTTagCompound tag);
+    org.bukkit.inventory.ItemStack getItemStack();
 }

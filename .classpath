@@ -6,6 +6,8 @@
 	<classpathentry kind="lib" path="lib/Vault.jar"/>
 	<classpathentry kind="lib" path="lib/bukkit_breaks_everything.jar"/>
 	<classpathentry kind="lib" path="lib/craftbukkit_breaks_everything.jar"/>
-	<classpathentry kind="lib" path="lib/DiabloDrops.jar"/>
+	<classpathentry kind="lib" path="lib/bukkit-1.4.5-R0.2.jar"/>
+	<classpathentry kind="lib" path="lib/craftbukkit-1.4.5-R0.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DiabloLibrary"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
