@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.modcrafting.diablodrops.items.Socket;
 import com.modcrafting.identify.Identify;
-import com.modcrafting.toolapi.lib.OldTool;
 import com.modcrafting.toolapi.lib.ToolInterface;
 /*
  * 
@@ -127,7 +126,7 @@ public class IdentifyCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
 				}
-				com.modcrafting.diablodrops.items.Tome tome = new com.modcrafting.diablodrops.items.Tome();
+				com.modcrafting.diablodrops.items.IdentifyTome tome = new com.modcrafting.diablodrops.items.IdentifyTome();
 				player.getInventory().addItem(tome);
 				player.updateInventory();
 				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
@@ -185,8 +184,14 @@ public class IdentifyCommand implements CommandExecutor {
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}
-				OldTool t = new OldTool(item);
-				t.setName(name);
+				ToolInterface tool = null;
+				while(tool==null){
+					if(newtool)
+						tool = new com.modcrafting.toolapi.lib.NewTool(item);
+					else
+						tool = new com.modcrafting.toolapi.lib.OldTool(item);
+				}
+				tool.setName(name);
 				sender.sendMessage(ChatColor.GRAY+" Name: "+name+ChatColor.GRAY+" was set for "+ChatColor.GOLD+String.valueOf(price));
 				return true;
 			}
@@ -221,7 +226,13 @@ public class IdentifyCommand implements CommandExecutor {
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}
-                OldTool tool = new OldTool(player.getItemInHand());
+				ToolInterface tool = null;
+				while(tool==null){
+					if(newtool)
+						tool = new com.modcrafting.toolapi.lib.NewTool(player.getItemInHand());
+					else
+						tool = new com.modcrafting.toolapi.lib.OldTool(player.getItemInHand());
+				}
                 for (String s : lore.split(","))
                 {
                     if (s.length() > 0)
