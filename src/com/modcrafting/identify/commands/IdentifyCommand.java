@@ -178,6 +178,7 @@ public class IdentifyCommand implements CommandExecutor {
 				}
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(name);
+				item.setItemMeta(meta);
 				sender.sendMessage(ChatColor.GRAY+" Name: "+name+ChatColor.GRAY+" was set for "+ChatColor.GOLD+String.valueOf(price));
 				return true;
 			}
