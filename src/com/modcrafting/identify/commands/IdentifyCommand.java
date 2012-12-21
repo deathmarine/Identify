@@ -222,6 +222,7 @@ public class IdentifyCommand implements CommandExecutor {
                 }
                 ItemMeta m = item.getItemMeta();
                 m.setLore(list);
+                item.setItemMeta(m);
                 sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
 				for(String s:list){
                     if (s.length() > 0)
