@@ -1,5 +1,6 @@
 package com.modcrafting.identify.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -10,24 +11,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.modcrafting.diablodrops.items.Socket;
 import com.modcrafting.identify.Identify;
-import com.modcrafting.toolapi.lib.ToolInterface;
 /*
  * 
  */
 public class IdentifyCommand implements CommandExecutor {
 	Identify plugin;
-	boolean newtool;
 	public IdentifyCommand(Identify identify) {
 		this.plugin = identify;
-		String p = identify.getServer().getClass().getPackage().getName();
-        String version = p.substring(p.lastIndexOf('.') + 1);
-        if (version.equalsIgnoreCase("v1_4_5"))
-        	newtool = true;
-        else
-        	newtool = false;
 		
 	}
 	@SuppressWarnings("deprecation")
@@ -73,15 +67,14 @@ public class IdentifyCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
 				}else{
-					ToolInterface tool = null;
-					while(tool==null){
-						if(newtool)
-							tool = new com.modcrafting.toolapi.lib.NewTool(plugin.getDiabloDrops().dropsAPI.getItem());
-						else
-							tool = new com.modcrafting.toolapi.lib.OldTool(plugin.getDiabloDrops().dropsAPI.getItem());
+					ItemStack item = plugin.getDiabloDrops().dropsAPI.getItem();
+					while(item==null)
+						item = plugin.getDiabloDrops().dropsAPI.getItem();
+					String name = null;
+					if(item.hasItemMeta()){
+						name = item.getItemMeta().getDisplayName();
 					}
-					String name = tool.getName();
-					player.getInventory().addItem(tool.getItemStack());
+					player.getInventory().addItem(item);
 					player.updateInventory();
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 					sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
@@ -98,15 +91,14 @@ public class IdentifyCommand implements CommandExecutor {
 							sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 							return true;
 						}
-						ToolInterface tool = null;
-						while(tool==null){
-							if(newtool)
-								tool = new com.modcrafting.toolapi.lib.NewTool(plugin.getDiabloDrops().dropsAPI.getItem(tier));
-							else
-								tool = new com.modcrafting.toolapi.lib.OldTool(plugin.getDiabloDrops().dropsAPI.getItem(tier));
+						ItemStack item = plugin.getDiabloDrops().dropsAPI.getItem();
+						while(item==null)
+							item = plugin.getDiabloDrops().dropsAPI.getItem();
+						String name = null;
+						if(item.hasItemMeta()){
+							name = item.getItemMeta().getDisplayName();
 						}
-						String name = tool.getName();
-						player.getInventory().addItem(tool.getItemStack());
+						player.getInventory().addItem(item);
 						player.updateInventory();
 						plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 						sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
@@ -184,14 +176,8 @@ public class IdentifyCommand implements CommandExecutor {
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}
-				ToolInterface tool = null;
-				while(tool==null){
-					if(newtool)
-						tool = new com.modcrafting.toolapi.lib.NewTool(item);
-					else
-						tool = new com.modcrafting.toolapi.lib.OldTool(item);
-				}
-				tool.setName(name);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName(name);
 				sender.sendMessage(ChatColor.GRAY+" Name: "+name+ChatColor.GRAY+" was set for "+ChatColor.GOLD+String.valueOf(price));
 				return true;
 			}
@@ -226,20 +212,17 @@ public class IdentifyCommand implements CommandExecutor {
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}
-				ToolInterface tool = null;
-				while(tool==null){
-					if(newtool)
-						tool = new com.modcrafting.toolapi.lib.NewTool(player.getItemInHand());
-					else
-						tool = new com.modcrafting.toolapi.lib.OldTool(player.getItemInHand());
-				}
+				ItemStack item = player.getItemInHand();
+				List<String> list = new ArrayList<String>();
                 for (String s : lore.split(","))
                 {
                     if (s.length() > 0)
-                        tool.addLore(s);
+                        list.add(s);
                 }
+                ItemMeta m = item.getItemMeta();
+                m.setLore(list);
                 sender.sendMessage(ChatColor.DARK_AQUA + "You were charged: " + ChatColor.BLUE + String.valueOf(price));
-				for(String s:lore.split(",")){
+				for(String s:list){
                     if (s.length() > 0)
                         sender.sendMessage(s);
 				}
@@ -247,27 +230,26 @@ public class IdentifyCommand implements CommandExecutor {
 				return true;
 			}
 			if(args[1].equalsIgnoreCase("random")&&hasPerms(sender,"identify.buy.random")){
-				ToolInterface tool = null;
-				if(newtool)
-					tool = new com.modcrafting.toolapi.lib.NewTool(player.getItemInHand());
-				else
-					tool = new com.modcrafting.toolapi.lib.OldTool(player.getItemInHand());
-				if(tool.getName().contains(new Character((char) 167).toString())){
-					sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
-					return true;
+				ItemStack item = player.getItemInHand();
+				if(item.hasItemMeta()){
+					ItemMeta meta = item.getItemMeta();
+					if(meta.getDisplayName().contains(new Character((char) 167).toString())
+							|| item.getEnchantments().size()>0){
+						sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
+						return true;
+					}
 				}
 				plugin.buy.buyRandom(player);
 				return true;						
 			}
 			if(args[1].equalsIgnoreCase("enchant")&&args.length>2&&hasPerms(sender,"identify.buy.enchant")){
-				ToolInterface tool = null;
-				if(newtool)
-					tool = new com.modcrafting.toolapi.lib.NewTool(player.getItemInHand());
-				else
-					tool = new com.modcrafting.toolapi.lib.OldTool(player.getItemInHand());
-				if(tool.getName().contains(new Character((char) 167).toString())){
-					sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
-					return true;
+				ItemStack item = player.getItemInHand();
+				if(item.hasItemMeta()){
+					ItemMeta meta = item.getItemMeta();
+					if(meta.getDisplayName().contains(new Character((char) 167).toString())){
+						sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
+						return true;
+					}
 				}
 				plugin.buy.buyList(player, args); 
 				return true;
