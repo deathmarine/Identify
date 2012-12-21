@@ -246,7 +246,8 @@ public class IdentifyCommand implements CommandExecutor {
 				ItemStack item = player.getItemInHand();
 				if(item.hasItemMeta()){
 					ItemMeta meta = item.getItemMeta();
-					if(meta.getDisplayName().contains(new Character((char) 167).toString())){
+					if(meta.getDisplayName()!=null
+							&&meta.getDisplayName().contains(new Character((char) 167).toString())){
 						sender.sendMessage(ChatColor.AQUA+"You are unable to enchant this.");
 						return true;
 					}
