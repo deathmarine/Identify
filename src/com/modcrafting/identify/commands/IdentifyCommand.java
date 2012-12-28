@@ -67,9 +67,9 @@ public class IdentifyCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
 				}else{
-					ItemStack item = plugin.getDiabloDrops().dropsAPI.getItem();
+					ItemStack item = plugin.getDiabloDrops().getDropAPI().getItem();
 					while(item==null)
-						item = plugin.getDiabloDrops().dropsAPI.getItem();
+						item = plugin.getDiabloDrops().getDropAPI().getItem();
 					String name = null;
 					if(item.hasItemMeta()){
 						name = item.getItemMeta().getDisplayName();
@@ -91,9 +91,9 @@ public class IdentifyCommand implements CommandExecutor {
 							sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 							return true;
 						}
-						ItemStack item = plugin.getDiabloDrops().dropsAPI.getItem();
+						ItemStack item = plugin.getDiabloDrops().getDropAPI().getItem();
 						while(item==null)
-							item = plugin.getDiabloDrops().dropsAPI.getItem();
+							item = plugin.getDiabloDrops().getDropAPI().getItem();
 						String name = null;
 						if(item.hasItemMeta()){
 							name = item.getItemMeta().getDisplayName();
@@ -135,9 +135,9 @@ public class IdentifyCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					return true;
 				}
-	            List<String> l = plugin.getDiabloDrops().config.getStringList("SocketItem.Items");
+	            List<String> l = plugin.getDiabloDrops().getConfig().getStringList("SocketItem.Items");
 	            com.modcrafting.diablodrops.items.Socket tome = new Socket(Material.valueOf(l.get(
-	            		plugin.getDiabloDrops().gen.nextInt(l.size())).toUpperCase()));
+	            		plugin.getDiabloDrops().getSingleRandom().nextInt(l.size())).toUpperCase()));
 				player.getInventory().addItem(tome);
 				player.updateInventory();
 				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
