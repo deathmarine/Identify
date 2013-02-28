@@ -159,7 +159,7 @@ public class IdentifyCommand implements CommandExecutor {
 					return true;
 				}
 				if(plugin.getConfig().getBoolean("Name.Flat",true)){
-					price = plugin.ddConfig.getDouble("Name.FlatRate", 1000);
+					price = plugin.getConfig().getDouble("Name.FlatRate", 1000);
 					if(price > bal){
 						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 						sender.sendMessage(ChatColor.BLUE + "Name Cost: "+String.valueOf(price));
@@ -167,7 +167,7 @@ public class IdentifyCommand implements CommandExecutor {
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}else{
-					price = plugin.ddConfig.getDouble("Name.PerLetter", 10);
+					price = plugin.getConfig().getDouble("Name.PerLetter", 10);
 					price = price*name.length();
 					if(price > bal){
 						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
@@ -194,8 +194,8 @@ public class IdentifyCommand implements CommandExecutor {
 				String lore = combineSplit(2, args, " ");
                 lore = ChatColor.translateAlternateColorCodes(
                         "&".toCharArray()[0], lore);
-				if(!plugin.ddConfig.getBoolean("Lore.PerLetterLine",false)){
-					price = plugin.ddConfig.getDouble("Lore.FlatRatePerLine", 1000);
+				if(!plugin.getConfig().getBoolean("Lore.PerLetterLine",false)){
+					price = plugin.getConfig().getDouble("Lore.FlatRatePerLine", 1000);
 					price = lore.split(",").length*price;
 					if(price > bal){
 						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
@@ -204,7 +204,7 @@ public class IdentifyCommand implements CommandExecutor {
 					}
 					plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 				}else{
-					price = plugin.ddConfig.getDouble("Lore.PerRate", 10);
+					price = plugin.getConfig().getDouble("Lore.PerRate", 10);
 					price = lore.length()*price;
 					if(price > bal){
 						sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
@@ -270,7 +270,7 @@ public class IdentifyCommand implements CommandExecutor {
 				return true;
 			}
 			if(plugin.getConfig().getBoolean("Repair.Flat",true)){
-				price = plugin.ddConfig.getDouble("Repair.FlatRate", 1000);
+				price = plugin.getConfig().getDouble("Repair.FlatRate", 1000);
 				if(price > bal){
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 					sender.sendMessage(ChatColor.BLUE + "Repair Cost: "+String.valueOf(price));
@@ -278,7 +278,7 @@ public class IdentifyCommand implements CommandExecutor {
 				}
 				plugin.economy.withdrawPlayer(sender.getName(), Math.abs(price));
 			}else{
-				price = plugin.ddConfig.getDouble("Repair.PriceVsDamage", 10);
+				price = plugin.getConfig().getDouble("Repair.PriceVsDamage", 10);
 				price = price*item.getDurability();
 				if(price > bal){
 					sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");

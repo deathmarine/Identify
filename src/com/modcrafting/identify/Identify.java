@@ -28,7 +28,6 @@ public class Identify extends JavaPlugin{
 			this.getLogger().warning("Shutting down Identify. Could not find Vault.");
 			this.setEnabled(false);
 			return;
-			
 		}		
 		if(getDiabloDrops()!=null){
 			writeDefault("diablodrops.yml");
@@ -39,7 +38,6 @@ public class Identify extends JavaPlugin{
 			}
 			return;
 		}
-		
 	}
 	public void loadCommands(){
 		getCommand("identify").setExecutor(new IdentifyCommand(this));
@@ -60,30 +58,29 @@ public class Identify extends JavaPlugin{
 
 		return (com.modcrafting.diablodrops.DiabloDrops) plugin;
 	}
-	 public void writeDefault(String name)
-	    {
-	        File actual = new File(this.getDataFolder(), name);
-	        if (!actual.exists())
-	        {
-	            try
-	            {
-	                InputStream input = this.getClass().getResourceAsStream(
-	                        "/"+name);
-	                FileOutputStream output = new FileOutputStream(actual);
-	                byte[] buf = new byte[8192];
-	                int length = 0;
-	                while ((length = input.read(buf)) > 0)
-	                {
-	                    output.write(buf, 0, length);
-	                }
-	                output.close();
-	                input.close();
-	            }
-	            catch (Exception e)
-	            {
-	            	e.printStackTrace();
-	            }
+	public void writeDefault(String name)
+	{
+		File actual = new File(this.getDataFolder(), name);
+		if (!actual.exists())
+		{
+			try
+			{
+				InputStream input = this.getClass().getResourceAsStream("/"+name);
+				FileOutputStream output = new FileOutputStream(actual);
+				byte[] buf = new byte[8192];
+				int length = 0;
+				while ((length = input.read(buf)) > 0)
+				{
+					output.write(buf, 0, length);
+				}
+				output.close();
+				input.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 	        }
-	    }
+	}
 }
 
