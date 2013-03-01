@@ -86,7 +86,7 @@ public class IdentifyCommand implements CommandExecutor {
 			if(args[1].equalsIgnoreCase("tier")&&plugin.getDiabloDrops()!=null){
 				for(com.modcrafting.diablodrops.tier.Tier tier:plugin.getDiabloDrops().tiers){
 					if(args[2].equalsIgnoreCase(tier.getName())&&plugin.ddConfig.getBoolean("DiabloDrop.Tier.Enabled",true)){
-						double price = plugin.ddConfig.getDouble("DiabloDrop."+tier.getName()+".Price", 1000);
+						double price = plugin.ddConfig.getDouble("DiabloDrop.Tier."+tier.getName()+".Price", 1000);
 						if(price > bal){
 							sender.sendMessage(ChatColor.DARK_AQUA + "Your don't have enough money!");
 							return true;
